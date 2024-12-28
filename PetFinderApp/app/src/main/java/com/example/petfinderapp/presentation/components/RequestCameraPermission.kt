@@ -2,6 +2,7 @@ package com.example.petfinderapp.presentation.components
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -21,6 +22,7 @@ fun RequestCameraPermission(
         if (isGranted) {
             onPermissionGranted()
         } else {
+            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
             onPermissionDenied()
         }
     }

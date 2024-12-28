@@ -1,22 +1,17 @@
 package com.example.petfinderapp.presentation.screens
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.ui.Modifier
@@ -29,8 +24,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.Dialog
-import androidx.core.content.ContextCompat
 import coil.compose.rememberAsyncImagePainter
+import com.example.petfinderapp.presentation.components.RequestCameraPermission
 import com.example.petfinderapp.presentation.utils.CameraUtils.openCamera
 import com.example.petfinderapp.presentation.utils.ImageUtils.handleGalleryResult
 import com.example.petfinderapp.presentation.utils.ImageUtils.openGallery
@@ -51,6 +46,7 @@ fun CreatePostScreen(
     var selectedImages by remember { mutableStateOf<List<String>>(emptyList()) }
     var imageUri: Uri? by remember { mutableStateOf(null) }
     var fullScreenImageIndex by remember { mutableStateOf<Int?>(null) }
+    var showPermissionDialog by remember { mutableStateOf(false) }
 
     var titleEmpty by remember { mutableStateOf(false) }
     var usernameEmpty by remember { mutableStateOf(false) }
@@ -80,16 +76,19 @@ fun CreatePostScreen(
         }
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            openCamera(context, takePictureLauncher) { uri ->
-                imageUri = uri
+    if (showPermissionDialog) {
+        RequestCameraPermission(
+            onPermissionGranted = {
+                showPermissionDialog = false
+                openCamera(context, takePictureLauncher) { uri ->
+                    imageUri = uri
+                }
+            },
+            onPermissionDenied = {
+                showPermissionDialog = false
+                Toast.makeText(context, "Camera permission is required to take photos", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
-        }
+        )
     }
 
     fun savePost() {
@@ -222,18 +221,7 @@ fun CreatePostScreen(
                 Text("Select photos")
             }
 
-            Button(onClick = {
-                val permissionCheck =
-                    ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-
-                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                    openCamera(context, takePictureLauncher) { uri ->
-                        imageUri = uri
-                    }
-                } else {
-                    permissionLauncher.launch(Manifest.permission.CAMERA)
-                }
-            }) {
+            Button(onClick = { showPermissionDialog = true }) {
                 Text("Take photo")
             }
 
@@ -246,7 +234,7 @@ fun CreatePostScreen(
         LazyRow(
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(selectedImages) { uri ->
+            items(selectedImages.reversed()) { uri ->
                 Box(
                     modifier = Modifier.size(150.dp),
                     contentAlignment = Alignment.TopEnd
@@ -315,7 +303,7 @@ fun CreatePostScreen(
                             .height(100.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(selectedImages) { uri ->
+                        items(selectedImages.reversed()) { uri ->
                             Image(
                                 painter = rememberAsyncImagePainter(model = uri),
                                 contentDescription = null,
