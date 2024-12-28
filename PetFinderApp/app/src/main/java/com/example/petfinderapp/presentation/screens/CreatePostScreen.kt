@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
@@ -245,13 +247,33 @@ fun CreatePostScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             items(selectedImages) { uri ->
-                Image(
-                    painter = rememberAsyncImagePainter(model = uri),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(150.dp)
-                        .clickable { fullScreenImageIndex = selectedImages.indexOf(uri) }
-                )
+                Box(
+                    modifier = Modifier.size(150.dp),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = uri),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable { fullScreenImageIndex = selectedImages.indexOf(uri) }
+                    )
+
+                    IconButton(
+                        onClick = {
+                            selectedImages = selectedImages.filter { it != uri }
+                        },
+                        modifier = Modifier
+                            .size(26.dp)
+                            .padding(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
