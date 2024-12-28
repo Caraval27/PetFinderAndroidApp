@@ -1,13 +1,9 @@
 package com.example.petfinderapp.presentation.screens
 
 import android.Manifest
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Environment
-import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -32,14 +28,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
-import com.example.petfinderapp.presentation.components.RequestCameraPermission
+import com.example.petfinderapp.presentation.utils.CameraUtils.openCamera
+import com.example.petfinderapp.presentation.utils.ImageUtils.handleGalleryResult
+import com.example.petfinderapp.presentation.utils.ImageUtils.openGallery
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun CreatePostScreen(
@@ -67,22 +60,12 @@ fun CreatePostScreen(
     val getPictureLauncher: ActivityResultLauncher<Intent> = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val uris = result.data?.clipData
-            val singleUri = result.data?.data
-
-            selectedImages = when {
-                uris != null -> {
-                    selectedImages + (0 until uris.itemCount).map { i -> uris.getItemAt(i).uri.toString() }
-                }
-                singleUri != null -> {
-                    selectedImages + listOf(singleUri.toString())
-                }
-                else -> selectedImages
-            }
-
-            pictureEmpty = false
-        }
+        selectedImages = handleGalleryResult(
+            resultCode = result.resultCode,
+            data = result.data,
+            existingImages = selectedImages
+        )
+        pictureEmpty = selectedImages.isEmpty()
     }
 
     val takePictureLauncher = rememberLauncherForActivityResult(
@@ -92,39 +75,6 @@ fun CreatePostScreen(
             imageUri?.let { uri ->
                 selectedImages = selectedImages + uri.toString()
             }
-        }
-    }
-
-    fun openPhotoPicker() {
-        val intent = Intent(Intent.ACTION_PICK).apply {
-            type = "image/*"
-            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        }
-        getPictureLauncher.launch(intent)
-    }
-
-    fun createImageFile(): File {
-        val timestamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-        val storageDir: File? = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile(
-            "JPEG_${timestamp}_",
-            ".jpg",
-            storageDir
-        )
-    }
-
-    fun openCamera(context: Context, takePictureLauncher: ActivityResultLauncher<Uri>, onImageUriCreated: (Uri) -> Unit) {
-        try {
-            val file = createImageFile()
-            val uri = FileProvider.getUriForFile(
-                context,
-                "com.example.petfinderapp.provider",
-                file
-            )
-            onImageUriCreated(uri)
-            takePictureLauncher.launch(uri)
-        } catch (e: Exception) {
-            Toast.makeText(context, "Failed to open camera: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -262,29 +212,33 @@ fun CreatePostScreen(
             }
         }
 
-        Button(onClick = { openPhotoPicker() }) {
-            Text("Select photos")
-        }
-        if (pictureEmpty) {
-            Text("At least one picture is required", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(onClick = {
-            val permissionCheck =
-                ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-
-            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                openCamera(context, takePictureLauncher) { uri ->
-                    imageUri = uri
-                }
-            } else {
-                permissionLauncher.launch(Manifest.permission.CAMERA)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Button(onClick = { openGallery(getPictureLauncher) }) {
+                Text("Select photos")
             }
-        }) {
-            Text("Take photo")
-        }
 
+            Button(onClick = {
+                val permissionCheck =
+                    ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+
+                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                    openCamera(context, takePictureLauncher) { uri ->
+                        imageUri = uri
+                    }
+                } else {
+                    permissionLauncher.launch(Manifest.permission.CAMERA)
+                }
+            }) {
+                Text("Take photo")
+            }
+
+            if (pictureEmpty) {
+                Text("At least one picture is required", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
+        }
         Spacer(modifier = Modifier.height(8.dp))
 
         LazyRow(
