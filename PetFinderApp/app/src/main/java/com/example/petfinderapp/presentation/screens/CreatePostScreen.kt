@@ -28,7 +28,7 @@ import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 
 @Composable
 fun CreatePostScreen(
-    viewModel: PetFinderVM
+    petFinderVM: PetFinderVM
 ) {
     var selectedImages by remember { mutableStateOf<List<String>>(emptyList()) }
     var title by remember { mutableStateOf("") }
@@ -80,7 +80,7 @@ fun CreatePostScreen(
         pictureEmpty = selectedImages.isEmpty()
 
         if (!titleEmpty && !usernameEmpty && !phoneEmpty && !pictureEmpty) {
-            viewModel.createPost(
+            petFinderVM.createPost(
                 title = title,
                 animalType = animalType,
                 race = race,
