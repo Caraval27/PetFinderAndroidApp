@@ -22,8 +22,6 @@ class PetFinderVM : ViewModel() {
             )
         )
     }
-
-    fun getPosts(): List<Post> = posts
 }
 
 data class Post(

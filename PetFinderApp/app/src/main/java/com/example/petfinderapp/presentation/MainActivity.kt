@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             PetFinderAppTheme {
-                val navController : NavHostController = rememberNavController();
+                val navController : NavHostController = rememberNavController()
 
                 Scaffold(
                     bottomBar = { BottomNavBar(navController) }
