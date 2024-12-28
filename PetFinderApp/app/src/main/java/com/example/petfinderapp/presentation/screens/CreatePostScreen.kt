@@ -7,8 +7,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -16,9 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 
@@ -35,6 +39,7 @@ fun CreatePostScreen(
     var phoneNumber by remember { mutableStateOf("") }
     var description by remember { mutableStateOf(TextFieldValue("")) }
     var postType by remember { mutableStateOf("Found") }
+    var fullScreenImageIndex by remember { mutableStateOf<Int?>(null) }
 
     var titleEmpty by remember { mutableStateOf(false) }
     var usernameEmpty by remember { mutableStateOf(false) }
@@ -173,7 +178,7 @@ fun CreatePostScreen(
 
         Text("Post type", style = MaterialTheme.typography.bodyLarge)
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = postType == "Found",
                     onClick = { postType = "Found" }
@@ -181,7 +186,7 @@ fun CreatePostScreen(
                 Text("Found")
             }
             Spacer(modifier = Modifier.width(16.dp))
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = postType == "Looking",
                     onClick = { postType = "Looking" }
@@ -198,18 +203,16 @@ fun CreatePostScreen(
         }
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            modifier = Modifier
-                .horizontalScroll(rememberScrollState())
-                .fillMaxWidth()
+        LazyRow(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            selectedImages.forEach { uri ->
+            items(selectedImages) { uri ->
                 Image(
                     painter = rememberAsyncImagePainter(model = uri),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(128.dp)
-                        .padding(4.dp)
+                        .size(150.dp)
+                        .clickable { fullScreenImageIndex = selectedImages.indexOf(uri) }
                 )
             }
         }
@@ -222,4 +225,94 @@ fun CreatePostScreen(
             Text("Save Post")
         }
     }
+
+    fullScreenImageIndex?.let { index ->
+        Dialog(onDismissRequest = { fullScreenImageIndex = null }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = selectedImages[index]),
+                        contentDescription = "Selected Image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(0.5f)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(selectedImages) { uri ->
+                            Image(
+                                painter = rememberAsyncImagePainter(model = uri),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .clickable { fullScreenImageIndex = selectedImages.indexOf(uri) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(onClick = { fullScreenImageIndex = null }) {
+                        Text("Close")
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+    fullScreenImageIndex?.let { startIndex ->
+        Dialog(onDismissRequest = { fullScreenImageIndex = null }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                LazyRow(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    items(selectedImages) { uri ->
+                        Image(
+                            painter = rememberAsyncImagePainter(model = uri),
+                            contentDescription = "Selected Image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(0.35f)
+                                .padding(8.dp)
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                ) {
+                    Button(onClick = { fullScreenImageIndex = null }) {
+                        Text("Close")
+                    }
+                }
+            }
+        }
+    }
+     */
 }
