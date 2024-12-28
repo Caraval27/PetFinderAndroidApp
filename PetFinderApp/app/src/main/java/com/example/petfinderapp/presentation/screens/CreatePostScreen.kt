@@ -1,7 +1,14 @@
 package com.example.petfinderapp.presentation.screens
 
+import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,17 +27,24 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
+import com.example.petfinderapp.presentation.components.RequestCameraPermission
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun CreatePostScreen(
     petFinderVM: PetFinderVM
 ) {
-    var selectedImages by remember { mutableStateOf<List<String>>(emptyList()) }
     var title by remember { mutableStateOf("") }
     var animalType by remember { mutableStateOf("") }
     var race by remember { mutableStateOf("") }
@@ -39,6 +53,8 @@ fun CreatePostScreen(
     var phoneNumber by remember { mutableStateOf("") }
     var description by remember { mutableStateOf(TextFieldValue("")) }
     var postType by remember { mutableStateOf("Found") }
+    var selectedImages by remember { mutableStateOf<List<String>>(emptyList()) }
+    var imageUri: Uri? by remember { mutableStateOf(null) }
     var fullScreenImageIndex by remember { mutableStateOf<Int?>(null) }
 
     var titleEmpty by remember { mutableStateOf(false) }
@@ -46,7 +62,9 @@ fun CreatePostScreen(
     var phoneEmpty by remember { mutableStateOf(false) }
     var pictureEmpty by remember { mutableStateOf(false) }
 
-    val launcher: ActivityResultLauncher<Intent> = rememberLauncherForActivityResult(
+    val context = LocalContext.current
+
+    val getPictureLauncher: ActivityResultLauncher<Intent> = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -55,13 +73,25 @@ fun CreatePostScreen(
 
             selectedImages = when {
                 uris != null -> {
-                    (0 until uris.itemCount).map { i -> uris.getItemAt(i).uri.toString() }
+                    selectedImages + (0 until uris.itemCount).map { i -> uris.getItemAt(i).uri.toString() }
                 }
-                singleUri != null -> listOf(singleUri.toString())
-                else -> emptyList()
+                singleUri != null -> {
+                    selectedImages + listOf(singleUri.toString())
+                }
+                else -> selectedImages
             }
 
             pictureEmpty = false
+        }
+    }
+
+    val takePictureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            imageUri?.let { uri ->
+                selectedImages = selectedImages + uri.toString()
+            }
         }
     }
 
@@ -70,7 +100,44 @@ fun CreatePostScreen(
             type = "image/*"
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
-        launcher.launch(intent)
+        getPictureLauncher.launch(intent)
+    }
+
+    fun createImageFile(): File {
+        val timestamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+        val storageDir: File? = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timestamp}_",
+            ".jpg",
+            storageDir
+        )
+    }
+
+    fun openCamera(context: Context, takePictureLauncher: ActivityResultLauncher<Uri>, onImageUriCreated: (Uri) -> Unit) {
+        try {
+            val file = createImageFile()
+            val uri = FileProvider.getUriForFile(
+                context,
+                "com.example.petfinderapp.provider",
+                file
+            )
+            onImageUriCreated(uri)
+            takePictureLauncher.launch(uri)
+        } catch (e: Exception) {
+            Toast.makeText(context, "Failed to open camera: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            openCamera(context, takePictureLauncher) { uri ->
+                imageUri = uri
+            }
+        } else {
+            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun savePost() {
@@ -203,6 +270,23 @@ fun CreatePostScreen(
         }
         Spacer(modifier = Modifier.height(8.dp))
 
+        Button(onClick = {
+            val permissionCheck =
+                ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                openCamera(context, takePictureLauncher) { uri ->
+                    imageUri = uri
+                }
+            } else {
+                permissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        }) {
+            Text("Take photo")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         LazyRow(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -261,7 +345,9 @@ fun CreatePostScreen(
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(100.dp)
-                                    .clickable { fullScreenImageIndex = selectedImages.indexOf(uri) }
+                                    .clickable {
+                                        fullScreenImageIndex = selectedImages.indexOf(uri)
+                                    }
                             )
                         }
                     }
