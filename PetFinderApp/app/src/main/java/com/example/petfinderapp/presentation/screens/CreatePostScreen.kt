@@ -1,1 +1,225 @@
 package com.example.petfinderapp.presentation.screens
+
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.*
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import coil.compose.rememberAsyncImagePainter
+import com.example.petfinderapp.presentation.viewModel.PetFinderVM
+
+@Composable
+fun CreatePostScreen(
+    viewModel: PetFinderVM
+) {
+    var selectedImages by remember { mutableStateOf<List<String>>(emptyList()) }
+    var title by remember { mutableStateOf("") }
+    var animalType by remember { mutableStateOf("") }
+    var race by remember { mutableStateOf("") }
+    var color by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf(TextFieldValue("")) }
+    var postType by remember { mutableStateOf("Found") }
+
+    var titleEmpty by remember { mutableStateOf(false) }
+    var usernameEmpty by remember { mutableStateOf(false) }
+    var phoneEmpty by remember { mutableStateOf(false) }
+    var pictureEmpty by remember { mutableStateOf(false) }
+
+    val launcher: ActivityResultLauncher<Intent> = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val uris = result.data?.clipData
+            val singleUri = result.data?.data
+
+            selectedImages = when {
+                uris != null -> {
+                    (0 until uris.itemCount).map { i -> uris.getItemAt(i).uri.toString() }
+                }
+                singleUri != null -> listOf(singleUri.toString())
+                else -> emptyList()
+            }
+
+            pictureEmpty = false
+        }
+    }
+
+    fun openPhotoPicker() {
+        val intent = Intent(Intent.ACTION_PICK).apply {
+            type = "image/*"
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        }
+        launcher.launch(intent)
+    }
+
+    fun savePost() {
+        titleEmpty= title.isEmpty()
+        usernameEmpty = username.isEmpty()
+        phoneEmpty = phoneNumber.isEmpty()
+        pictureEmpty = selectedImages.isEmpty()
+
+        if (!titleEmpty && !usernameEmpty && !phoneEmpty && !pictureEmpty) {
+            viewModel.createPost(
+                title = title,
+                animalType = animalType,
+                race = race,
+                color = color,
+                username = username,
+                phoneNumber = phoneNumber,
+                description = description.text,
+                postType = postType == "Found",
+                images = selectedImages
+            )
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Text("Create a Post", style = MaterialTheme.typography.headlineSmall)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Title") },
+            isError = titleEmpty,
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (titleEmpty) {
+            Text("Title is required", color = Color.Red, style = MaterialTheme.typography.bodySmall)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = animalType,
+            onValueChange = { animalType = it },
+            label = { Text("Type of animal") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = race,
+            onValueChange = { race = it },
+            label = { Text("Race") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = color,
+            onValueChange = { color = it },
+            label = { Text("Color") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Your name") },
+            isError = usernameEmpty,
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (usernameEmpty) {
+            Text("Name is required", color = Color.Red, style = MaterialTheme.typography.bodySmall)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = phoneNumber,
+            onValueChange = { input ->
+                phoneNumber = input.filter { it.isDigit() || it == '+' || it == '-' }
+            },
+            label = { Text("Phone number") },
+            modifier = Modifier.fillMaxWidth(),
+            isError = phoneEmpty,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+        )
+        if (phoneEmpty) {
+            Text("Phone number is required", color = Color.Red, style = MaterialTheme.typography.bodySmall)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Description") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text("Post type", style = MaterialTheme.typography.bodyLarge)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                RadioButton(
+                    selected = postType == "Found",
+                    onClick = { postType = "Found" }
+                )
+                Text("Found")
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                RadioButton(
+                    selected = postType == "Looking",
+                    onClick = { postType = "Looking" }
+                )
+                Text("Looking")
+            }
+        }
+
+        Button(onClick = { openPhotoPicker() }) {
+            Text("Select photos")
+        }
+        if (pictureEmpty) {
+            Text("At least one picture is required", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+                .fillMaxWidth()
+        ) {
+            selectedImages.forEach { uri ->
+                Image(
+                    painter = rememberAsyncImagePainter(model = uri),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(128.dp)
+                        .padding(4.dp)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { savePost() },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Save Post")
+        }
+    }
+}
