@@ -118,7 +118,7 @@ fun CreatePostScreen(
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text("Create a Post", style = MaterialTheme.typography.headlineSmall)
+        Text("Create post", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
@@ -226,7 +226,7 @@ fun CreatePostScreen(
             }
 
             if (pictureEmpty) {
-                Text("At least one picture is required", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                Text("At least one photo is required", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -270,7 +270,7 @@ fun CreatePostScreen(
             onClick = { savePost() },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Save Post")
+            Text("Save post")
         }
     }
 
