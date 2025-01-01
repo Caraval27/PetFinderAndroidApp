@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
+import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.presentation.components.RequestCameraPermission
 import com.example.petfinderapp.presentation.utils.CameraUtils.openCamera
 import com.example.petfinderapp.presentation.utils.ImageUtils.handleGalleryResult
@@ -106,7 +107,7 @@ fun CreatePostScreen(
                 username = username,
                 phoneNumber = phoneNumber,
                 description = description.text,
-                postType = postType == "Found",
+                postType = PostType.valueOf(postType),
                 images = selectedImages
             )
         }

@@ -1,6 +1,8 @@
 package com.example.petfinderapp.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
+import com.example.petfinderapp.domain.Post
+import com.example.petfinderapp.domain.PostType
 
 class PetFinderVM : ViewModel() {
     private val posts = mutableListOf<Post>()
@@ -13,7 +15,7 @@ class PetFinderVM : ViewModel() {
         username: String,
         phoneNumber: String,
         description: String,
-        postType: Boolean,
+        postType: PostType,
         images: List<String>
     ) {
         posts.add(
@@ -23,15 +25,3 @@ class PetFinderVM : ViewModel() {
         )
     }
 }
-
-data class Post(
-    val title: String,
-    val animalType: String,
-    val race: String,
-    val color: String,
-    val username: String,
-    val phoneNumber: String,
-    val description: String,
-    val postType: Boolean, //true = found, false == looking
-    val images: List<String>
-)
