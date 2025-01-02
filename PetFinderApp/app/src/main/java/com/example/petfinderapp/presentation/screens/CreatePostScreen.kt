@@ -40,7 +40,7 @@ fun CreatePostScreen(
     var animalType by remember { mutableStateOf("") }
     var race by remember { mutableStateOf("") }
     var color by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
+    var userName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var description by remember { mutableStateOf(TextFieldValue("")) }
     var postType by remember { mutableStateOf("Found") }
@@ -48,7 +48,6 @@ fun CreatePostScreen(
     var imageUri: Uri? by remember { mutableStateOf(null) }
     var fullScreenImageIndex by remember { mutableStateOf<Int?>(null) }
     var showPermissionDialog by remember { mutableStateOf(false) }
-
     var titleEmpty by remember { mutableStateOf(false) }
     var usernameEmpty by remember { mutableStateOf(false) }
     var phoneEmpty by remember { mutableStateOf(false) }
@@ -94,7 +93,7 @@ fun CreatePostScreen(
 
     fun savePost() {
         titleEmpty= title.isEmpty()
-        usernameEmpty = username.isEmpty()
+        usernameEmpty = userName.isEmpty()
         phoneEmpty = phoneNumber.isEmpty()
         pictureEmpty = selectedImages.isEmpty()
 
@@ -104,7 +103,7 @@ fun CreatePostScreen(
                 animalType = animalType,
                 race = race,
                 color = color,
-                username = username,
+                userName = userName,
                 phoneNumber = phoneNumber,
                 description = description.text,
                 postType = PostType.valueOf(postType),
@@ -159,8 +158,8 @@ fun CreatePostScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
+            value = userName,
+            onValueChange = { userName = it },
             label = { Text("Your name") },
             isError = usernameEmpty,
             modifier = Modifier.fillMaxWidth()

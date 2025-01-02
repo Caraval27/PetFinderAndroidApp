@@ -1,27 +1,34 @@
 package com.example.petfinderapp.presentation.viewModel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.petfinderapp.application.PetFinderService
 import com.example.petfinderapp.domain.Post
 import com.example.petfinderapp.domain.PostType
+import kotlinx.coroutines.launch
 
 class PetFinderVM : ViewModel() {
     private val posts = mutableListOf<Post>()
+    private val petFinderService : PetFinderService = PetFinderService()
 
     fun createPost(
         title: String,
         animalType: String,
         race: String,
         color: String,
-        username: String,
+        userName: String,
         phoneNumber: String,
         description: String,
         postType: PostType,
         images: List<String>
     ) {
-        posts.add(
+        val post =
             Post(
-                title, animalType, race, color, username, phoneNumber, description, postType, images
+                title, animalType, race, color, userName, phoneNumber, description, postType, images
             )
-        )
+        viewModelScope.launch {
+            petFinderService.createPost(post)
+        }
     }
 }
