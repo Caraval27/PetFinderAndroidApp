@@ -36,6 +36,7 @@ class RealtimeDbRepository {
                 val post = dataSnapshot.getValue(Post::class.java)
                 if (post != null) {
                     _posts.value += post
+                    Log.d("RealtimeDbRepository","Post fetched: " + post.title)
                 }
             }
 
@@ -54,6 +55,7 @@ class RealtimeDbRepository {
     }
 
     fun addPostListener(postType : PostType) {
+        _posts.value = emptyList()
         val postTypeQuery = postsRef.orderByChild("postType").equalTo(postType.toString())
         postTypeQuery.addChildEventListener(postListener)
     }
