@@ -1,6 +1,6 @@
 package com.example.petfinderapp.presentation.viewModel
 
-import android.net.Uri
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.petfinderapp.application.PetFinderService
@@ -11,6 +11,8 @@ import kotlinx.coroutines.launch
 class PetFinderVM : ViewModel() {
     private val posts = mutableListOf<Post>()
     private val petFinderService : PetFinderService = PetFinderService()
+    var searchImages = mutableStateOf<List<String>>(emptyList())
+        private set
 
     fun createPost(
         title: String,
@@ -30,5 +32,9 @@ class PetFinderVM : ViewModel() {
         viewModelScope.launch {
             petFinderService.createPost(post)
         }
+    }
+
+    fun updateSearchImages(newImages: List<String>) {
+        searchImages.value = newImages
     }
 }
