@@ -14,7 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.petfinderapp.presentation.components.BottomNavBar
 import com.example.petfinderapp.presentation.screens.CreatePostScreen
-import com.example.petfinderapp.presentation.screens.Screen
+import com.example.petfinderapp.presentation.screens.FoundScreen
+import com.example.petfinderapp.presentation.screens.LookingScreen
 import com.example.petfinderapp.presentation.theme.PetFinderAppTheme
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 
@@ -39,10 +40,10 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable(Screen.Found.route) {
-                            //FoundScreen()
+                            FoundScreen(petFinderVM = petFinderVM)
                         }
                         composable(Screen.Looking.route) {
-                            //LookingScreen()
+                            LookingScreen(petFinderVM = petFinderVM)
                         }
                         composable(Screen.CreatePost.route) {
                             CreatePostScreen(petFinderVM = petFinderVM)

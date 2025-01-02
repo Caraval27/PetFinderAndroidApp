@@ -12,24 +12,22 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
 import com.example.petfinderapp.domain.PostType
+import com.example.petfinderapp.presentation.components.AddPictureToPostBox
 import com.example.petfinderapp.presentation.components.RequestCameraPermission
 import com.example.petfinderapp.presentation.utils.CameraUtils.openCamera
 import com.example.petfinderapp.presentation.utils.ImageUtils.handleGalleryResult
-import com.example.petfinderapp.presentation.utils.ImageUtils.openGallery
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 
 @Composable
@@ -51,7 +49,7 @@ fun CreatePostScreen(
     var titleEmpty by remember { mutableStateOf(false) }
     var usernameEmpty by remember { mutableStateOf(false) }
     var phoneEmpty by remember { mutableStateOf(false) }
-    var pictureEmpty by remember { mutableStateOf(false) }
+    var imagesEmpty by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -63,7 +61,6 @@ fun CreatePostScreen(
             data = result.data,
             existingImages = selectedImages
         )
-        pictureEmpty = selectedImages.isEmpty()
     }
 
     val takePictureLauncher = rememberLauncherForActivityResult(
@@ -86,18 +83,22 @@ fun CreatePostScreen(
             },
             onPermissionDenied = {
                 showPermissionDialog = false
-                Toast.makeText(context, "Camera permission is required to take photos", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Camera permission is required to take photos",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         )
     }
 
     fun savePost() {
-        titleEmpty= title.isEmpty()
+        titleEmpty = title.isEmpty()
         usernameEmpty = userName.isEmpty()
         phoneEmpty = phoneNumber.isEmpty()
-        pictureEmpty = selectedImages.isEmpty()
+        imagesEmpty = selectedImages.isEmpty()
 
-        if (!titleEmpty && !usernameEmpty && !phoneEmpty && !pictureEmpty) {
+        if (!titleEmpty && !usernameEmpty && !phoneEmpty && !imagesEmpty) {
             petFinderVM.createPost(
                 title = title,
                 animalType = animalType,
@@ -109,6 +110,21 @@ fun CreatePostScreen(
                 postType = PostType.valueOf(postType),
                 images = selectedImages
             )
+            title = ""
+            animalType = ""
+            race = ""
+            color = ""
+            userName = ""
+            phoneNumber = ""
+            description = TextFieldValue("")
+            postType = "Found"
+            selectedImages = emptyList()
+            imageUri = null
+
+            titleEmpty = false
+            usernameEmpty = false
+            phoneEmpty = false
+            imagesEmpty = false
         }
     }
 
@@ -116,9 +132,25 @@ fun CreatePostScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Create post", style = MaterialTheme.typography.headlineSmall)
+        Text(
+            text = "Create post",
+            style = MaterialTheme.typography.headlineSmall.copy(
+                fontFamily = FontFamily.Monospace
+            )
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        AddPictureToPostBox(
+            selectedImages = selectedImages,
+            imagesEmpty = imagesEmpty,
+            onImageSelected = { newImages -> selectedImages = newImages },
+            getPictureLauncher = getPictureLauncher,
+            onShowPermissionDialogChange = { showPermissionDialog = it },
+            onFullScreenImageIndexChange = { fullScreenImageIndex = it }
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
@@ -129,7 +161,11 @@ fun CreatePostScreen(
             modifier = Modifier.fillMaxWidth()
         )
         if (titleEmpty) {
-            Text("Title is required", color = Color.Red, style = MaterialTheme.typography.bodySmall)
+            Text(
+                "Title is required",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -165,7 +201,11 @@ fun CreatePostScreen(
             modifier = Modifier.fillMaxWidth()
         )
         if (usernameEmpty) {
-            Text("Name is required", color = Color.Red, style = MaterialTheme.typography.bodySmall)
+            Text(
+                "Name is required",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -180,7 +220,11 @@ fun CreatePostScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
         )
         if (phoneEmpty) {
-            Text("Phone number is required", color = Color.Red, style = MaterialTheme.typography.bodySmall)
+            Text(
+                "Phone number is required",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -194,17 +238,22 @@ fun CreatePostScreen(
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text("Post type", style = MaterialTheme.typography.bodyLarge)
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Post type: ", style = MaterialTheme.typography.bodyLarge)
+                Spacer(modifier = Modifier.width(8.dp))
+
                 RadioButton(
                     selected = postType == "Found",
                     onClick = { postType = "Found" }
                 )
                 Text("Found")
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
+
+                Spacer(modifier = Modifier.width(16.dp))
+
                 RadioButton(
                     selected = postType == "Looking",
                     onClick = { postType = "Looking" }
@@ -212,59 +261,7 @@ fun CreatePostScreen(
                 Text("Looking")
             }
         }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Button(onClick = { openGallery(getPictureLauncher) }) {
-                Text("Select photos")
-            }
-
-            Button(onClick = { showPermissionDialog = true }) {
-                Text("Take photo")
-            }
-
-            if (pictureEmpty) {
-                Text("At least one photo is required", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
-            }
-        }
         Spacer(modifier = Modifier.height(8.dp))
-
-        LazyRow(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(selectedImages.reversed()) { uri ->
-                Box(
-                    modifier = Modifier.size(150.dp),
-                    contentAlignment = Alignment.TopEnd
-                ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(model = uri),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clickable { fullScreenImageIndex = selectedImages.indexOf(uri) }
-                    )
-
-                    IconButton(
-                        onClick = {
-                            selectedImages = selectedImages.filter { it != uri }
-                        },
-                        modifier = Modifier
-                            .size(26.dp)
-                            .padding(4.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete",
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = { savePost() },
@@ -325,44 +322,4 @@ fun CreatePostScreen(
             }
         }
     }
-
-    /*
-    fullScreenImageIndex?.let { startIndex ->
-        Dialog(onDismissRequest = { fullScreenImageIndex = null }) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(4.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                LazyRow(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    items(selectedImages) { uri ->
-                        Image(
-                            painter = rememberAsyncImagePainter(model = uri),
-                            contentDescription = "Selected Image",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(0.35f)
-                                .padding(8.dp)
-                        )
-                    }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(16.dp)
-                ) {
-                    Button(onClick = { fullScreenImageIndex = null }) {
-                        Text("Close")
-                    }
-                }
-            }
-        }
-    }
-     */
 }

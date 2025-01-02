@@ -1,6 +1,6 @@
 package com.example.petfinderapp.presentation.viewModel
 
-import android.net.Uri
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.petfinderapp.application.PetFinderService
@@ -12,10 +12,10 @@ import kotlinx.coroutines.launch
 
 class PetFinderVM : ViewModel() {
     private val petFinderService : PetFinderService = PetFinderService()
+    var searchImages = mutableStateOf<List<String>>(emptyList())
+        private set
     val posts: StateFlow<List<Post>> = petFinderService.posts
-    private val _view = MutableStateFlow(View.Looking)
-    val view: StateFlow<View>
-        get() = _view
+    private var _postType = PostType.Looking
 
     fun createPost(
         title: String,
@@ -37,19 +37,15 @@ class PetFinderVM : ViewModel() {
         }
     }
 
-    fun changeView(view: View) {
+    fun initFeed(postType: PostType) {
         viewModelScope.launch {
-            if (_view.value != View.Post) {
-                petFinderService.stopStreamingPosts(PostType.valueOf(_view.value.toString()))
-            }
-            _view.value = view
-            if (view != View.Post) {
-                petFinderService.startStreamingPosts(PostType.valueOf(view.toString()))
-            }
+            petFinderService.stopStreamingPosts(_postType)
+            _postType = postType
+            petFinderService.startStreamingPosts(postType)
         }
     }
-}
 
-enum class View {
-    Post, Looking, Found
+    fun updateSearchImages(newImages: List<String>) {
+        searchImages.value = newImages
+    }
 }
