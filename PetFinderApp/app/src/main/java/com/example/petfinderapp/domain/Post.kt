@@ -1,15 +1,17 @@
 package com.example.petfinderapp.domain
 
+import android.net.Uri
+
 data class Post(
     val title: String,
     val animalType: String,
     val race: String,
     val color: String,
-    val username: String,
+    val userName: String,
     val phoneNumber: String,
     val description: String,
     val postType: PostType,
-    val images: List<String>
+    var images: List<String>
 )
 
 enum class PostType {

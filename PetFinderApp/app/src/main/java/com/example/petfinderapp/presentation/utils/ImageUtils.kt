@@ -2,6 +2,7 @@ package com.example.petfinderapp.presentation.utils
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
 
 object ImageUtils {
@@ -29,7 +30,7 @@ object ImageUtils {
                     existingImages + (0 until uris.itemCount).map { i -> uris.getItemAt(i).uri.toString() }
                 }
                 singleUri != null -> {
-                    existingImages + listOf(singleUri.toString())
+                    existingImages + singleUri.toString()
                 }
                 else -> existingImages
             }
