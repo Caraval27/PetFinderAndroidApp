@@ -14,10 +14,10 @@ class RealtimeDbRepository {
         val newPostRef = postsRef.push()
         val task = newPostRef.setValue(post)
         task.addOnSuccessListener {
-            Log.d("RealtimeDbRepository", "Succeeded insert post")
+            Log.d("RealtimeDbRepository", "Succeeded to insert post")
         }
         task.addOnFailureListener {
-            Log.e("RealtimeDbRepository", "Failed insert post", it)
+            Log.e("RealtimeDbRepository", "Failed to insert post", it)
         }
     }
 

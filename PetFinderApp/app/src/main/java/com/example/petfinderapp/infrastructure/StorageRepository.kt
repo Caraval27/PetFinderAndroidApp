@@ -17,10 +17,10 @@ class StorageRepository {
         }
         val task = imageRef.putFile(imageUri)
         task.addOnSuccessListener {
-            Log.d("StorageRepository", "Succeeded upload image")
+            Log.d("StorageRepository", "Succeeded to upload image")
         }
         task.addOnFailureListener {
-            Log.e("StorageRepository", "Failed upload image", it)
+            Log.e("StorageRepository", "Failed to upload image", it)
         }
         task.await()
         return imageRef.downloadUrl.await().toString()
