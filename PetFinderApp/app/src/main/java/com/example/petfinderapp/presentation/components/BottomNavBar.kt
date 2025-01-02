@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.petfinderapp.presentation.screens.Screen
+import com.example.petfinderapp.presentation.Screen
 
 @Composable
 fun BottomNavBar(navController: NavController) {

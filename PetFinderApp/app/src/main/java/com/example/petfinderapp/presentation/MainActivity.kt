@@ -14,7 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.petfinderapp.presentation.components.BottomNavBar
 import com.example.petfinderapp.presentation.screens.CreatePostScreen
-import com.example.petfinderapp.presentation.screens.Screen
 import com.example.petfinderapp.presentation.theme.PetFinderAppTheme
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 

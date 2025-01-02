@@ -1,7 +1,5 @@
 package com.example.petfinderapp.domain
 
-import android.net.Uri
-
 data class Post(
     val title: String,
     val animalType: String,

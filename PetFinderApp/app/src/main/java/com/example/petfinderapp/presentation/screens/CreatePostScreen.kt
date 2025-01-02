@@ -63,7 +63,6 @@ fun CreatePostScreen(
             data = result.data,
             existingImages = selectedImages
         )
-        pictureEmpty = selectedImages.isEmpty()
     }
 
     val takePictureLauncher = rememberLauncherForActivityResult(
