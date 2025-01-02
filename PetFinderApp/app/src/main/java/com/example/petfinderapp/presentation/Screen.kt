@@ -1,4 +1,4 @@
-package com.example.petfinderapp.presentation.screens
+package com.example.petfinderapp.presentation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
