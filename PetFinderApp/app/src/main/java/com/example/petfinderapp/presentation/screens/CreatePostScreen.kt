@@ -108,6 +108,21 @@ fun CreatePostScreen(
                 postType = PostType.valueOf(postType),
                 images = selectedImages
             )
+            title = ""
+            animalType = ""
+            race = ""
+            color = ""
+            userName = ""
+            phoneNumber = ""
+            description = TextFieldValue("")
+            postType = "Found"
+            selectedImages = emptyList()
+            imageUri = null
+
+            titleEmpty = false
+            usernameEmpty = false
+            phoneEmpty = false
+            pictureEmpty = false
         }
     }
 
