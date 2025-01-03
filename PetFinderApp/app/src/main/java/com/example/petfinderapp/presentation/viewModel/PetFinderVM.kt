@@ -21,8 +21,19 @@ class PetFinderVM() : ViewModel() {
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories
 
+    private val _filteredPosts = MutableStateFlow<List<Post>>(emptyList())
+    val filteredPosts: StateFlow<List<Post>> = _filteredPosts
+
     val posts: StateFlow<List<Post>> = petFinderService.posts
     private var _postType = PostType.Looking
+
+    init {
+        viewModelScope.launch {
+            posts.collect { allPosts ->
+                applyFilters(allPosts)
+            }
+        }
+    }
 
     fun createPost(
         title: String,
@@ -67,6 +78,22 @@ class PetFinderVM() : ViewModel() {
     fun updateCategory(updatedCategory: Category) {
         _categories.value = _categories.value.map { category ->
             if (category.name == updatedCategory.name) updatedCategory else category
+        }
+
+        applyFilters(posts.value)
+    }
+
+    private fun applyFilters(allPosts: List<Post>) {
+        val selectedSubcategories = _categories.value.flatMap { category ->
+            category.subcategories.filter { it.isSelected }.map { it.name }
+        }
+
+        _filteredPosts.value = if (selectedSubcategories.isEmpty()) {
+            allPosts
+        } else {
+            allPosts.filter { post ->
+                selectedSubcategories.contains(post.animalType)
+            }
         }
     }
 

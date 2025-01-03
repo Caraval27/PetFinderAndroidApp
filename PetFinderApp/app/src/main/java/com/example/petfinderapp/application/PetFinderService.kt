@@ -41,7 +41,7 @@ class PetFinderService{
         val files = context.assets.list("") ?: emptyArray()
 
         for (fileName in files) {
-            if (fileName.endsWith(".txt")) {
+            if (fileName.startsWith("Category") && fileName.endsWith(".txt")) {
                 val lines = context.assets.open(fileName).bufferedReader().use { it.readLines() }
                 if (lines.isNotEmpty()) {
                     val categoryName = lines[0]

@@ -27,14 +27,13 @@ fun FeedGrid(
     petFinderVM: PetFinderVM,
     onImageClick: (Post) -> Unit
 ) {
-    val posts = petFinderVM.posts.collectAsState()
     val context = LocalContext.current
+    val categories by petFinderVM.categories.collectAsState()
+    val filteredPosts by petFinderVM.filteredPosts.collectAsState()
 
     LaunchedEffect(Unit) {
         petFinderVM.loadCategories(context)
     }
-
-    val categories by petFinderVM.categories.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -79,7 +78,7 @@ fun FeedGrid(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(posts.value) { post ->
+            items(filteredPosts) { post ->
                 ImageCard(imageUri = post.images[0], onImageClick = { onImageClick(post) })
             }
         }
