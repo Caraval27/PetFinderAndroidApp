@@ -8,6 +8,7 @@ import com.example.petfinderapp.application.PetFinderService
 import com.example.petfinderapp.domain.Category
 import com.example.petfinderapp.domain.Post
 import com.example.petfinderapp.domain.PostType
+import com.example.petfinderapp.domain.Subcategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,7 +25,7 @@ class PetFinderVM() : ViewModel() {
     private val _filteredPosts = MutableStateFlow<List<Post>>(emptyList())
     val filteredPosts: StateFlow<List<Post>> = _filteredPosts
 
-    val posts: StateFlow<List<Post>> = petFinderService.posts
+    private val posts: StateFlow<List<Post>> = petFinderService.posts
     private var _postType = PostType.Looking
 
     init {
@@ -72,10 +73,29 @@ class PetFinderVM() : ViewModel() {
     }
 
     fun loadAnimalTypes(context: Context): List<String> {
-        return context.assets.open("CategoryAnimal.txt")
+        return context.assets.open("CategoryAnimalType.txt")
             .bufferedReader()
             .useLines { lines ->
                 lines.drop(1).toList()
+            }
+    }
+
+    fun loadAnimalBreeds(context: Context, animalType: String): List<String> {
+        val fileName = when (animalType) {
+            "Dog" -> "CategoryDogBreeds.txt"
+            "Cat" -> "CategoryCatBreeds.txt"
+            else -> return emptyList()
+        }
+        return context.assets.open(fileName)
+            .bufferedReader()
+            .useLines { lines -> lines.toList() }
+    }
+
+    fun loadDogBreeds(context: Context): List<Subcategory> {
+        return context.assets.open("CategoryDogBreeds.txt")
+            .bufferedReader()
+            .useLines { lines ->
+                lines.map { Subcategory(name = it, isSelected = false) }.toList()
             }
     }
 
