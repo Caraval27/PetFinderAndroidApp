@@ -31,6 +31,8 @@ class PetFinderVM : ViewModel() {
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories
 
+    private val breedCache = mutableMapOf<String, List<Subcategory>>()
+
     private val _filteredPosts = MutableStateFlow<List<Post>>(emptyList())
     val filteredPosts: StateFlow<List<Post>> = _filteredPosts
 
@@ -137,6 +139,31 @@ class PetFinderVM : ViewModel() {
 
     fun loadFilterCategories(context: Context) {
         _categories.value = petFinderService.loadCategories(context)
+    }
+
+    fun updateFilterCategory(context: Context, updatedCategory: Category) {
+        val updatedCategories = _categories.value.map { category ->
+            if (category.name == updatedCategory.name) {
+                if (updatedCategory.isSelected) {
+                    val newSubcategories = if (breedCache.containsKey(updatedCategory.name)) {
+                        breedCache[updatedCategory.name]!!
+                    } else {
+                        val breeds = loadAnimalBreeds(context, updatedCategory.name)
+                        val subcategories = breeds.map { Subcategory(name = it, isSelected = false) }
+                        breedCache[updatedCategory.name] = subcategories
+                        subcategories
+                    }
+                    updatedCategory.copy(subcategories = newSubcategories)
+                } else {
+                    updatedCategory.copy(subcategories = updatedCategory.subcategories.map { it.copy(isSelected = false) })
+                }
+            } else {
+                category
+            }
+        }
+
+        _categories.value = updatedCategories
+        applyFilters(posts.value)
     }
 
     fun updateFilterCategory(updatedCategory: Category) {
