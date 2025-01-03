@@ -49,7 +49,7 @@ fun SearchByPictureButton(
             imageUri?.let { uri ->
                 val updatedImages = petFinderVM.searchImages.value + uri.toString()
                 petFinderVM.updateSearchImages(updatedImages)
-                //petFinderVM.searchImage(context, imageUri!!) //varför !!
+                petFinderVM.searchImage(context, imageUri!!) //varför !!
             }
         }
     }

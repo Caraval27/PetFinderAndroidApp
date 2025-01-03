@@ -187,6 +187,7 @@ class PetFinderVM : ViewModel() {
 
                     predictionResult.value = Pair(label, confidence)
                     val matchingPosts = petFinderService.searchPostsByAnimalType(label)
+                    _filteredPosts.value = matchingPosts
 
                     //val (label, confidence) = result
                     //predictionResult = result
