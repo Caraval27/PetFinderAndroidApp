@@ -16,8 +16,11 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.rememberAsyncImagePainter
+import com.example.petfinderapp.domain.Post
 import com.example.petfinderapp.domain.PostType
+import com.example.petfinderapp.presentation.components.FeedGrid
 import com.example.petfinderapp.presentation.components.ImageCard
+import com.example.petfinderapp.presentation.components.PostDetails
 import com.example.petfinderapp.presentation.components.SearchByPictureButton
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 
@@ -26,32 +29,15 @@ fun FoundScreen(
     petFinderVM: PetFinderVM
 ) {
     val context = LocalContext.current
-    val posts = petFinderVM.posts.collectAsState()
+    var selectedPost by remember { mutableStateOf<Post?>(null)}
 
     LaunchedEffect(Unit) {
         petFinderVM.initFeed(PostType.Found)
     }
-
-    Column(
-        modifier = Modifier
-        .fillMaxSize()
-    ) {
-        SearchByPictureButton(
-            context = context,
-            petFinderVM = petFinderVM
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            items(posts.value) { post ->
-                ImageCard(imageUri = post.images[0])
-            }
-        }
+    if (selectedPost == null) {
+        FeedGrid(petFinderVM = petFinderVM, onImageClick = { post -> selectedPost = post })
+    }
+    else {
+        PostDetails(selectedPost!!)
     }
 }
