@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.widget.Toast
-import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +14,7 @@ import com.example.petfinderapp.domain.Category
 import com.example.petfinderapp.domain.Post
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.utils.TensorFlowLiteHelper
-import kotlinx.coroutines.flow.MutableStateFlow
+
 import com.example.petfinderapp.domain.Subcategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
