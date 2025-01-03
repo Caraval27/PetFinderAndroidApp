@@ -116,7 +116,7 @@ fun CategoryItem(
             )
         }
 
-        if (category.isSelected) {
+        if (category.isSelected && category.subcategories.isNotEmpty()) {
             Column(modifier = Modifier.padding(start = 32.dp)) {
                 category.subcategories.forEach { subcategory ->
                     Row(
