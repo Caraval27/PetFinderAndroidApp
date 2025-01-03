@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
@@ -47,17 +49,17 @@ fun PostDetailsScreen(
     postId: String
 ) {
     val post = petFinderVM.post.collectAsState()
+    val pagerState = rememberPagerState(pageCount = { post.value.images.size })
 
     LaunchedEffect(postId) {
         petFinderVM.initDetails(postId)
     }
 
-    val pagerState = rememberPagerState(pageCount = { post.value.images.size })
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         HorizontalPager(
             state = pagerState,
