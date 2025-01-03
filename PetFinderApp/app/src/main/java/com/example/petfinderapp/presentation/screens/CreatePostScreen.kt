@@ -294,7 +294,7 @@ fun CreatePostScreen(
                 ) {
                     Image(
                         painter = rememberAsyncImagePainter(model = selectedImages[index]),
-                        contentDescription = "Selected Image",
+                        contentDescription = "Selected photo",
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(0.5f)

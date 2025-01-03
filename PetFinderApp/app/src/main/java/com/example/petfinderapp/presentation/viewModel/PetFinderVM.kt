@@ -16,6 +16,7 @@ import com.example.petfinderapp.utils.TensorFlowLiteHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 
 class PetFinderVM : ViewModel() {
@@ -23,6 +24,7 @@ class PetFinderVM : ViewModel() {
     var searchImages = mutableStateOf<List<String>>(emptyList())
         private set
     val posts: StateFlow<List<Post>> = petFinderService.posts
+    val post: StateFlow<Post> = petFinderService.post
     private var _postType = PostType.Looking
     var predictionResult = mutableStateOf<Pair<String, Float>?>(null)
 
@@ -44,6 +46,7 @@ class PetFinderVM : ViewModel() {
         val post =
             Post(
                 title = title,
+                date = LocalDateTime.now().toString(),
                 animalType = animalType,
                 race = race,
                 color = color,
@@ -59,10 +62,20 @@ class PetFinderVM : ViewModel() {
     }
 
     fun initFeed(postType: PostType) {
-        viewModelScope.launch {
-            petFinderService.stopStreamingPosts(_postType)
-            _postType = postType
-            petFinderService.startStreamingPosts(postType)
+        if (postType != _postType) {
+            viewModelScope.launch {
+                petFinderService.stopStreamingPostFeed(_postType)
+                _postType = postType
+                petFinderService.startStreamingPostFeed(postType)
+            }
+        }
+    }
+
+    fun initDetails(postId: String) {
+        if (postId != post.value.id) {
+            viewModelScope.launch {
+                petFinderService.startStreamingPostDetails(postId)
+            }
         }
     }
 
