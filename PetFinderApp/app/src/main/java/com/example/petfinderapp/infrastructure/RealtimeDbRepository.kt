@@ -11,10 +11,8 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.time.LocalDateTime
 import kotlinx.coroutines.tasks.await
-import java.io.Console
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class RealtimeDbRepository {
     private val postsRef = Firebase.database.getReference("posts")
@@ -46,7 +44,7 @@ class RealtimeDbRepository {
                 if (post != null && postId != null) {
                     post.id = dataSnapshot.key!!
                     val newPosts = _posts.value + post
-                    _posts.value = newPosts.sortedByDescending { LocalDate.parse(it.date, DateTimeFormatter.ISO_LOCAL_DATE_TIME) }
+                    _posts.value = newPosts.sortedByDescending { LocalDateTime.parse(it.time) }
                     Log.d("RealtimeDbRepository","Post fetched: " + post.title)
                 }
             }
