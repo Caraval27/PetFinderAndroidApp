@@ -22,8 +22,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.petfinderapp.domain.PostType
+import com.example.petfinderapp.presentation.Screen
 import com.example.petfinderapp.presentation.components.AddPictureToPostBox
 import com.example.petfinderapp.presentation.components.RequestCameraPermission
 import com.example.petfinderapp.presentation.utils.CameraUtils.openCamera
@@ -32,7 +34,8 @@ import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 
 @Composable
 fun CreatePostScreen(
-    petFinderVM: PetFinderVM
+    petFinderVM: PetFinderVM,
+    navController: NavHostController
 ) {
     var title by remember { mutableStateOf("") }
     var animalType by remember { mutableStateOf("") }
@@ -99,6 +102,7 @@ fun CreatePostScreen(
         imagesEmpty = selectedImages.isEmpty()
 
         if (!titleEmpty && !usernameEmpty && !phoneEmpty && !imagesEmpty) {
+            val postTypeValue = PostType.valueOf(postType)
             petFinderVM.createPost(
                 title = title,
                 animalType = animalType,
@@ -107,9 +111,13 @@ fun CreatePostScreen(
                 userName = userName,
                 phoneNumber = phoneNumber,
                 description = description.text,
-                postType = PostType.valueOf(postType),
+                postType = postTypeValue,
                 images = selectedImages
             )
+            when (PostType.valueOf(postType)) {
+                PostType.Found -> navController.navigate(Screen.Found.route)
+                PostType.Looking -> navController.navigate(Screen.Looking.route)
+            }
             title = ""
             animalType = ""
             race = ""

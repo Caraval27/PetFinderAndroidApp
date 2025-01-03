@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                             LookingScreen(petFinderVM = petFinderVM)
                         }
                         composable(Screen.CreatePost.route) {
-                            CreatePostScreen(petFinderVM = petFinderVM)
+                            CreatePostScreen(petFinderVM = petFinderVM, navController = navController)
                         }
                     }
                 }
