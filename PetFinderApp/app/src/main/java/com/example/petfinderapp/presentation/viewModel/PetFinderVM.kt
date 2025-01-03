@@ -69,7 +69,7 @@ class PetFinderVM : ViewModel() {
         val post =
             Post(
                 title = title,
-                date = LocalDateTime.now().toString(),
+                time = LocalDateTime.now().toString(),
                 animalType = animalType,
                 race = race,
                 color = color,
