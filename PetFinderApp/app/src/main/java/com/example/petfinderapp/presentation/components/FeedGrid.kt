@@ -32,7 +32,7 @@ fun FeedGrid(
     val filteredPosts by petFinderVM.filteredPosts.collectAsState()
 
     LaunchedEffect(Unit) {
-        petFinderVM.loadCategories(context)
+        petFinderVM.loadFilterCategories(context)
     }
 
     Column(
@@ -53,7 +53,7 @@ fun FeedGrid(
                 FilterButton(
                     categories = categories,
                     onCategorySelectionChange = { updatedCategory ->
-                        petFinderVM.updateCategory(updatedCategory)
+                        petFinderVM.updateFilterCategory(updatedCategory)
                     }
                 )
             }
