@@ -71,11 +71,27 @@ class PetFinderVM() : ViewModel() {
         }
     }
 
-    fun loadCategories(context: Context) {
+    fun loadAnimalTypes(context: Context): List<String> {
+        return context.assets.open("CategoryAnimal.txt")
+            .bufferedReader()
+            .useLines { lines ->
+                lines.drop(1).toList()
+            }
+    }
+
+    fun loadColors(context: Context): List<String> {
+        return context.assets.open("CategoryColor.txt")
+            .bufferedReader()
+            .useLines { lines ->
+                lines.drop(1).toList()
+            }
+    }
+
+    fun loadFilterCategories(context: Context) {
         _categories.value = petFinderService.loadCategories(context)
     }
 
-    fun updateCategory(updatedCategory: Category) {
+    fun updateFilterCategory(updatedCategory: Category) {
         _categories.value = _categories.value.map { category ->
             if (category.name == updatedCategory.name) updatedCategory else category
         }
@@ -84,15 +100,20 @@ class PetFinderVM() : ViewModel() {
     }
 
     private fun applyFilters(allPosts: List<Post>) {
-        val selectedSubcategories = _categories.value.flatMap { category ->
-            category.subcategories.filter { it.isSelected }.map { it.name }
+        val selectedFilters = _categories.value.associate { category ->
+            category.name to category.subcategories.filter { it.isSelected }.map { it.name }
         }
 
-        _filteredPosts.value = if (selectedSubcategories.isEmpty()) {
+        val selectedAnimals = selectedFilters["Animal"].orEmpty()
+        val selectedColors = selectedFilters["Color"].orEmpty()
+
+        _filteredPosts.value = if (selectedAnimals.isEmpty() && selectedColors.isEmpty()) {
             allPosts
         } else {
             allPosts.filter { post ->
-                selectedSubcategories.contains(post.animalType)
+                val matchesAnimal = selectedAnimals.isEmpty() || selectedAnimals.contains(post.animalType)
+                val matchesColor = selectedColors.isEmpty() || selectedColors.contains(post.color)
+                matchesAnimal && matchesColor
             }
         }
     }
