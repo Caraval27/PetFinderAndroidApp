@@ -19,13 +19,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.petfinderapp.domain.Post
+import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 
 @Composable
 fun FeedGrid(
     petFinderVM: PetFinderVM,
-    onImageClick: (Post) -> Unit
+    navController: NavHostController
 ) {
     val context = LocalContext.current
     val categories by petFinderVM.categories.collectAsState()
@@ -79,7 +82,7 @@ fun FeedGrid(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(filteredPosts) { post ->
-                ImageCard(imageUri = post.images[0], onImageClick = { onImageClick(post) })
+                ImageCard(post = post, navController = navController)
             }
         }
     }

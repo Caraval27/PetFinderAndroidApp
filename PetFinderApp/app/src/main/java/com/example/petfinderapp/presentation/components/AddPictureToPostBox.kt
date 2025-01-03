@@ -49,11 +49,11 @@ fun AddPictureToPostBox(
                     IconButton(onClick = { openGallery(getPictureLauncher) }) {
                         Icon(
                             painter = painterResource(id = R.drawable.select_photo_icon),
-                            contentDescription = "Select photo",
+                            contentDescription = "Select photos",
                             modifier = Modifier.size(36.dp)
                         )
                     }
-                    Text("Select photo", style = MaterialTheme.typography.bodySmall)
+                    Text("Select photos", style = MaterialTheme.typography.bodySmall)
                 }
                 Spacer(modifier = Modifier.width(16.dp))
 
@@ -101,7 +101,7 @@ fun AddPictureToPostBox(
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.delete),
-                                contentDescription = "Delete",
+                                contentDescription = "Delete photo",
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }

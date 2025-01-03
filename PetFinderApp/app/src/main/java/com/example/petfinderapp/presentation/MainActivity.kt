@@ -16,6 +16,7 @@ import com.example.petfinderapp.presentation.components.BottomNavBar
 import com.example.petfinderapp.presentation.screens.CreatePostScreen
 import com.example.petfinderapp.presentation.screens.FoundScreen
 import com.example.petfinderapp.presentation.screens.LookingScreen
+import com.example.petfinderapp.presentation.screens.PostDetailsScreen
 import com.example.petfinderapp.presentation.theme.PetFinderAppTheme
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 
@@ -40,13 +41,28 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable(Screen.Found.route) {
-                            FoundScreen(petFinderVM = petFinderVM)
+                            FoundScreen(petFinderVM = petFinderVM, navController = navController)
                         }
                         composable(Screen.Looking.route) {
-                            LookingScreen(petFinderVM = petFinderVM)
+                            LookingScreen(petFinderVM = petFinderVM, navController = navController)
                         }
                         composable(Screen.CreatePost.route) {
-                            CreatePostScreen(petFinderVM = petFinderVM, navController = navController)
+                            CreatePostScreen(
+                                petFinderVM = petFinderVM,
+                                navController = navController
+                            )
+                        }
+                        composable("details/{postId}") { navBackStackEntry ->
+                            if (navBackStackEntry.arguments != null) {
+                                val postId = navBackStackEntry.arguments!!.getString("postId")
+                                if (postId != null) {
+                                    PostDetailsScreen(
+                                        petFinderVM = petFinderVM,
+                                        postId = postId
+                                    )
+
+                                }
+                            }
                         }
                     }
                 }
