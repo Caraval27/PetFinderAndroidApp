@@ -30,7 +30,15 @@ class PetFinderVM : ViewModel() {
     ) {
         val post =
             Post(
-                title, animalType, race, color, userName, phoneNumber, description, postType, images
+                title = title,
+                animalType = animalType,
+                race = race,
+                color = color,
+                userName = userName,
+                phoneNumber = phoneNumber,
+                description = description,
+                postType = postType,
+                images = images
             )
         viewModelScope.launch {
             petFinderService.createPost(post)
