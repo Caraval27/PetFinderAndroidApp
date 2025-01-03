@@ -110,8 +110,8 @@ class PetFinderVM : ViewModel() {
 
     fun loadAnimalBreeds(context: Context, animalType: String): List<String> {
         val fileName = when (animalType) {
-            "Dog" -> "CategoryDogBreeds.txt"
-            "Cat" -> "CategoryCatBreeds.txt"
+            "Dog" -> "SubcategoryDogBreeds.txt"
+            "Cat" -> "SubcategoryCatBreeds.txt"
             else -> return emptyList()
         }
         return context.assets.open(fileName)
@@ -120,7 +120,7 @@ class PetFinderVM : ViewModel() {
     }
 
     fun loadDogBreeds(context: Context): List<Subcategory> {
-        return context.assets.open("CategoryDogBreeds.txt")
+        return context.assets.open("SubcategoryDogBreeds.txt")
             .bufferedReader()
             .useLines { lines ->
                 lines.map { Subcategory(name = it, isSelected = false) }.toList()
