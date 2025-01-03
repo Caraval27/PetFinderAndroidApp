@@ -263,7 +263,7 @@ fun CategoryItem(
                                         Text(
                                             text = subSubcategory.name,
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = Color.Gray
+                                            color = Color.DarkGray
                                         )
                                     }
                                 }
