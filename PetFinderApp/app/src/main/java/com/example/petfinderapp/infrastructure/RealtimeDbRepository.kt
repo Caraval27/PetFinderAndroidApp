@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.tasks.await
 import java.io.Console
 import java.time.LocalDate
 
@@ -65,5 +66,15 @@ class RealtimeDbRepository {
     fun removePostListener(postType: PostType) {
         val postTypeQuery = postsRef.orderByChild("postType").equalTo(postType.toString())
         postTypeQuery.removeEventListener(postListener)
+    }
+
+    suspend fun getPostsByAnimalType(animalType: String): List<Post> {
+        val snapshot = postsRef
+            .orderByChild("animalType") // Assuming "animalType" is the field you're filtering by
+            .equalTo(animalType)
+            .get()
+            .await()
+
+        return snapshot.children.mapNotNull { it.getValue(Post::class.java) }
     }
 }
