@@ -84,36 +84,30 @@ fun CategoryItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    val updatedSubcategories = if (!category.isSelected) {
-                        category.subcategories.map { it.copy(isSelected = false) }
-                    } else {
-                        category.subcategories
-                    }
-
-                    onCategorySelectionChange(
-                        category.copy(
-                            isSelected = !category.isSelected,
-                            subcategories = updatedSubcategories
-                        )
+                    val updatedCategory = category.copy(
+                        isSelected = !category.isSelected,
+                        subcategories = if (!category.isSelected) {
+                            category.subcategories
+                        } else {
+                            category.subcategories.map { it.copy(isSelected = false) }
+                        }
                     )
+                    onCategorySelectionChange(updatedCategory)
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(
                 checked = category.isSelected,
                 onCheckedChange = { isSelected ->
-                    val updatedSubcategories = if (!isSelected) {
-                        category.subcategories.map { it.copy(isSelected = false) }
-                    } else {
-                        category.subcategories
-                    }
-
-                    onCategorySelectionChange(
-                        category.copy(
-                            isSelected = isSelected,
-                            subcategories = updatedSubcategories
-                        )
+                    val updatedCategory = category.copy(
+                        isSelected = isSelected,
+                        subcategories = if (!isSelected) {
+                            category.subcategories.map { it.copy(isSelected = false) }
+                        } else {
+                            category.subcategories
+                        }
                     )
+                    onCategorySelectionChange(updatedCategory)
                 }
             )
             Text(
