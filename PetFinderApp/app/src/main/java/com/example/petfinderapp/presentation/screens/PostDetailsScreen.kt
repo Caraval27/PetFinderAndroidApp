@@ -1,4 +1,4 @@
-package com.example.petfinderapp.presentation.components
+package com.example.petfinderapp.presentation.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,11 +20,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,14 +36,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.petfinderapp.domain.Post
 import com.example.petfinderapp.domain.PostType
+import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 
 @Composable
-fun PostDetails(
-    post: Post
+fun PostDetailsScreen(
+    petFinderVM: PetFinderVM,
+    postId: String
 ) {
-    val pagerState = rememberPagerState(pageCount = { post.images.size })
+    val post = petFinderVM.post.collectAsState()
+
+    LaunchedEffect(postId) {
+        petFinderVM.initDetails(postId)
+    }
+
+    val pagerState = rememberPagerState(pageCount = { post.value.images.size })
 
     Column(
         modifier = Modifier
@@ -56,8 +64,8 @@ fun PostDetails(
                 .aspectRatio(1f)
         ) { page ->
             Image(
-                painter = rememberAsyncImagePainter(model = post.images[page]),
-                contentDescription = "Post image",
+                painter = rememberAsyncImagePainter(model = post.value.images[page]),
+                contentDescription = "Photo from post",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
@@ -90,7 +98,7 @@ fun PostDetails(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = post.title,
+            text = post.value.title,
             style = TextStyle(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -100,7 +108,7 @@ fun PostDetails(
         )
 
         Text(
-            text = post.date,
+            text = post.value.date,
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
@@ -113,34 +121,38 @@ fun PostDetails(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            if (post.postType == PostType.Looking) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Looking for a pet",
-                    tint = Color.Blue
-                )
-                Text(
-                    text = "Looking",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Blue
+            when (post.value.postType) {
+                PostType.Looking -> {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "Looking for a pet",
+                        tint = Color.Blue
                     )
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = "Found a pet",
-                    tint = Color.Green
-                )
-                Text(
-                    text = "Found",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Green
+                    Text(
+                        text = "Looking",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Blue
+                        )
                     )
-                )
+                }
+                PostType.Found -> {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = "Found a pet",
+                        tint = Color.Green
+                    )
+                    Text(
+                        text = "Found",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Green
+                        )
+                    )
+                }
+                null -> {}
             }
         }
 
@@ -160,7 +172,7 @@ fun PostDetails(
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            text = "${post.animalType}, ${post.race}, ${post.color}",
+            text = "${post.value.animalType}, ${post.value.race}, ${post.value.color}",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
@@ -185,7 +197,7 @@ fun PostDetails(
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            text = post.description,
+            text = post.value.description,
             style = TextStyle(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
@@ -201,7 +213,7 @@ fun PostDetails(
         )
 
         Text(
-            text = "Posted by: ${post.userName}",
+            text = "Posted by: ${post.value.userName}",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
@@ -210,7 +222,7 @@ fun PostDetails(
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            text = "Contact: ${post.phoneNumber}",
+            text = "Contact: ${post.value.phoneNumber}",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,

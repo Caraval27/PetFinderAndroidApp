@@ -14,6 +14,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.petfinderapp.domain.Post
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
@@ -21,7 +23,7 @@ import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 @Composable
 fun FeedGrid(
     petFinderVM: PetFinderVM,
-    onImageClick: (Post) -> Unit
+    navController: NavHostController
 ) {
     val posts = petFinderVM.posts.collectAsState()
     val context = LocalContext.current
@@ -44,7 +46,7 @@ fun FeedGrid(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(posts.value) { post ->
-                ImageCard(imageUri = post.images[0], onImageClick = { onImageClick(post) })
+                ImageCard(post = post, navController = navController)
             }
         }
     }

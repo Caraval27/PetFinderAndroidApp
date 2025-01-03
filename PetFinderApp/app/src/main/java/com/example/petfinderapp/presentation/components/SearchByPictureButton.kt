@@ -77,7 +77,7 @@ fun SearchByPictureButton(
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.image_search_icon),
-                contentDescription = "Choose Photo",
+                contentDescription = "Search by photo",
                 modifier = Modifier.size(34.dp)
             )
         }
