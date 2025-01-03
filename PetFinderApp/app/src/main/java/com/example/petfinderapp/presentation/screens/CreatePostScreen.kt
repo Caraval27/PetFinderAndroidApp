@@ -27,6 +27,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.presentation.Screen
 import com.example.petfinderapp.presentation.components.AddPictureToPostBox
+import com.example.petfinderapp.presentation.components.MultiSelectDropdown
 import com.example.petfinderapp.presentation.components.RequestCameraPermission
 import com.example.petfinderapp.presentation.utils.CameraUtils.openCamera
 import com.example.petfinderapp.presentation.utils.ImageUtils.handleGalleryResult
@@ -38,9 +39,13 @@ fun CreatePostScreen(
     navController: NavHostController
 ) {
     var title by remember { mutableStateOf("") }
-    var animalType by remember { mutableStateOf("") }
-    var race by remember { mutableStateOf("") }
-    var color by remember { mutableStateOf("") }
+    val availableAnimalTypes = remember { mutableStateListOf<String>() }
+    val animalType = remember { mutableStateOf("") }
+    val availableAnimalBreeds = remember { mutableStateListOf<String>() }
+    val selectedBreeds = remember { mutableStateListOf<String>() }
+
+    val availableColors = remember { mutableStateListOf<String>() }
+    val selectedColors = remember { mutableStateListOf<String>() }
     var userName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var description by remember { mutableStateOf(TextFieldValue("")) }
@@ -55,6 +60,19 @@ fun CreatePostScreen(
     var imagesEmpty by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        availableColors.clear()
+        availableColors.addAll(petFinderVM.loadColors(context))
+        availableAnimalTypes.clear()
+        availableAnimalTypes.addAll(petFinderVM.loadAnimalTypes(context))
+    }
+
+    LaunchedEffect(animalType.value) {
+        availableAnimalBreeds.clear()
+        selectedBreeds.clear()
+        availableAnimalBreeds.addAll(petFinderVM.loadAnimalBreeds(context, animalType.value))
+    }
 
     val getPictureLauncher: ActivityResultLauncher<Intent> = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -105,9 +123,9 @@ fun CreatePostScreen(
             val postTypeValue = PostType.valueOf(postType)
             petFinderVM.createPost(
                 title = title,
-                animalType = animalType,
-                race = race,
-                color = color,
+                animalType = animalType.value,
+                race = selectedBreeds.joinToString { ", " },
+                color = selectedColors.joinToString(", "), // temporärt
                 userName = userName,
                 phoneNumber = phoneNumber,
                 description = description.text,
@@ -119,9 +137,9 @@ fun CreatePostScreen(
                 PostType.Looking -> navController.navigate(Screen.Looking.route)
             }
             title = ""
-            animalType = ""
-            race = ""
-            color = ""
+            animalType.value = ""
+            selectedBreeds.clear()
+            selectedColors.clear()
             userName = ""
             phoneNumber = ""
             description = TextFieldValue("")
@@ -177,27 +195,27 @@ fun CreatePostScreen(
         }
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = animalType,
-            onValueChange = { animalType = it },
-            label = { Text("Type of animal") },
-            modifier = Modifier.fillMaxWidth()
+        MultiSelectDropdown(
+            text = "Type of animal",
+            availableOptions = availableAnimalTypes,
+            selectedOption = animalType,
+            allowMultipleOptions = false
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = race,
-            onValueChange = { race = it },
-            label = { Text("Race") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+        if (animalType.value.isNotEmpty()) {
+            MultiSelectDropdown(
+                text = animalType.value + " breed",
+                availableOptions = availableAnimalBreeds,
+                selectedOptions = selectedBreeds
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
-        OutlinedTextField(
-            value = color,
-            onValueChange = { color = it },
-            label = { Text("Color") },
-            modifier = Modifier.fillMaxWidth()
+        MultiSelectDropdown(
+            text = "Colors",
+            availableOptions = availableColors,
+            selectedOptions = selectedColors
         )
         Spacer(modifier = Modifier.height(8.dp))
 

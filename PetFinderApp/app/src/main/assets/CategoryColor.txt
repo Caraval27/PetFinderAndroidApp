@@ -1,0 +1,9 @@
+Color
+Black
+Brown
+Cream
+Fawn
+Gray
+Orange
+Red
+White
