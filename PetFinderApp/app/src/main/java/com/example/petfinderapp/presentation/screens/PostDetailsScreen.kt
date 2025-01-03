@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun PostDetailsScreen(
@@ -107,8 +109,13 @@ fun PostDetailsScreen(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
+        var timeText = ""
+        if (post.value.time.isNotEmpty()) {
+            timeText = LocalDateTime.parse(post.value.time).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+        }
+
         Text(
-            text = post.value.date,
+            text = timeText,
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
