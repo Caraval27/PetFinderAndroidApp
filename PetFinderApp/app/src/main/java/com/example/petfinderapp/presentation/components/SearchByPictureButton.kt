@@ -67,8 +67,7 @@ fun SearchByPictureButton(
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxWidth(),
         contentAlignment = Alignment.CenterEnd
     ) {
         IconButton(
