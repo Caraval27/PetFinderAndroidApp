@@ -1,6 +1,5 @@
 package com.example.petfinderapp.application
 
-import android.net.Uri
 import com.example.petfinderapp.domain.Post
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.infrastructure.RealtimeDbRepository
@@ -14,6 +13,7 @@ class PetFinderService {
     private val storageRepository : StorageRepository = StorageRepository()
 
     val posts: StateFlow<List<Post>> = realtimeDbRepository.posts
+    val post: StateFlow<Post> = realtimeDbRepository.post
 
     suspend fun createPost(post : Post) {
         val downloadUris : MutableList<String> = mutableListOf()
@@ -27,12 +27,16 @@ class PetFinderService {
         realtimeDbRepository.insertPost(post)
     }
 
-    fun startStreamingPosts(postType: PostType) {
-        realtimeDbRepository.addPostListener(postType)
+    fun startStreamingPostFeed(postType: PostType) {
+        realtimeDbRepository.addPostFeedListener(postType)
     }
 
-    fun stopStreamingPosts(postType: PostType) {
-        realtimeDbRepository.removePostListener(postType)
+    fun stopStreamingPostFeed(postType: PostType) {
+        realtimeDbRepository.removePostFeedListener(postType)
+    }
+
+    fun startStreamingPostDetails(postId: String) {
+        realtimeDbRepository.addPostDetailsListener(postId)
     }
 
     suspend fun searchPostsByAnimalType(animalType: String): List<Post> {
