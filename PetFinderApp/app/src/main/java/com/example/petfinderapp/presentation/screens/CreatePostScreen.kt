@@ -208,7 +208,7 @@ fun CreatePostScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         MultiSelectDropdown(
-            text = "Select colors",
+            text = "Colors",
             availableOptions = availableColors,
             selectedOptions = selectedColors
         )
