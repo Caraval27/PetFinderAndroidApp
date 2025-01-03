@@ -5,7 +5,9 @@ import com.example.petfinderapp.domain.Post
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.infrastructure.RealtimeDbRepository
 import com.example.petfinderapp.infrastructure.StorageRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
 
 class PetFinderService {
     private val realtimeDbRepository : RealtimeDbRepository = RealtimeDbRepository()
@@ -31,5 +33,17 @@ class PetFinderService {
 
     fun stopStreamingPosts(postType: PostType) {
         realtimeDbRepository.removePostListener(postType)
+    }
+
+    suspend fun searchPostsByAnimalType(animalType: String): List<Post> {
+        return withContext(Dispatchers.IO) {
+            try {
+                // Fetch posts from the repository filtered by the animal type
+                realtimeDbRepository.getPostsByAnimalType(animalType)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emptyList() // Return an empty list if there's an error
+            }
+        }
     }
 }
