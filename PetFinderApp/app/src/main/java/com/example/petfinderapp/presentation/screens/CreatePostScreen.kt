@@ -43,7 +43,6 @@ fun CreatePostScreen(
     val animalType = remember { mutableStateOf("") }
     val availableAnimalBreeds = remember { mutableStateListOf<String>() }
     val selectedBreeds = remember { mutableStateListOf<String>() }
-
     val availableColors = remember { mutableStateListOf<String>() }
     val selectedColors = remember { mutableStateListOf<String>() }
     var userName by remember { mutableStateOf("") }
