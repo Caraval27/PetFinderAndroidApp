@@ -12,6 +12,7 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDateTime
+import kotlinx.coroutines.tasks.await
 
 class RealtimeDbRepository {
     private val postsRef = Firebase.database.getReference("posts")
@@ -44,7 +45,7 @@ class RealtimeDbRepository {
                     post.id = dataSnapshot.key!!
                     val newPosts = _posts.value + post
                     _posts.value = newPosts.sortedByDescending { LocalDateTime.parse(it.time) }
-                    Log.d("RealtimeDbRepository","Post fetched: " + post.title + " " + post.time)
+                    Log.d("RealtimeDbRepository","Post fetched: " + post.title)
                 }
             }
 
@@ -95,5 +96,15 @@ class RealtimeDbRepository {
         _post.value = Post()
         val postIdQuery = postsRef.child(postId)
         postIdQuery.addListenerForSingleValueEvent(postDetailsListener)
+    }
+
+    suspend fun getPostsByAnimalType(animalType: String): List<Post> {
+        val snapshot = postsRef
+            .orderByChild("animalType") // Assuming "animalType" is the field you're filtering by
+            .equalTo(animalType)
+            .get()
+            .await()
+
+        return snapshot.children.mapNotNull { it.getValue(Post::class.java) }
     }
 }

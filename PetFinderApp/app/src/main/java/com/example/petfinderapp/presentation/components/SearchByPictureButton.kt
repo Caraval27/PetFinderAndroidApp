@@ -37,6 +37,9 @@ fun SearchByPictureButton(
             existingImages = petFinderVM.searchImages.value
         )
         petFinderVM.updateSearchImages(updatedImages)
+        //anropa min egna metod, som convertar
+        //hämta första bilder från handleGalleryResults
+        //convert to bitmap
     }
 
     val takePictureLauncher = rememberLauncherForActivityResult(
@@ -46,6 +49,7 @@ fun SearchByPictureButton(
             imageUri?.let { uri ->
                 val updatedImages = petFinderVM.searchImages.value + uri.toString()
                 petFinderVM.updateSearchImages(updatedImages)
+                //petFinderVM.searchImage(context, imageUri!!) //varför !!
             }
         }
     }
@@ -67,8 +71,7 @@ fun SearchByPictureButton(
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxWidth(),
         contentAlignment = Alignment.CenterEnd
     ) {
         IconButton(
