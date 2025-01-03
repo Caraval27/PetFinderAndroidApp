@@ -68,5 +68,4 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
     implementation("org.tensorflow:tensorflow-lite:2.12.0")
-
 }
