@@ -207,7 +207,7 @@ class PetFinderVM(
 
                     val allPosts = posts.value
                     _filteredPosts.value = allPosts.filter { post ->
-                        post.animalType == label
+                        post.breed.all { it in label }
                     }
                 } else {
                     Toast.makeText(context, "Failed to convert to bitmap", Toast.LENGTH_SHORT).show()
