@@ -10,7 +10,6 @@ import java.nio.channels.FileChannel
 class TensorFlowLiteHelper(context: Context) {
     private val interpreter: Interpreter
 
-
     /*
     init {
         //Laddar in den valda modellen från assetes
@@ -30,7 +29,7 @@ class TensorFlowLiteHelper(context: Context) {
         val modelFileInputStream = modelFileDescriptor.createInputStream()
 
         // Use MappedByteBuffer to load the model
-        val model = modelFileInputStream.channel.map(FileChannel.MapMode.READ_ONLY, 0, modelFileDescriptor.length)
+        val model = modelFileInputStream.channel.map(FileChannel.MapMode.READ_ONLY, modelFileDescriptor.startOffset, modelFileDescriptor.length)
 
         // Initialize interpreter with the model
         interpreter = Interpreter(model)

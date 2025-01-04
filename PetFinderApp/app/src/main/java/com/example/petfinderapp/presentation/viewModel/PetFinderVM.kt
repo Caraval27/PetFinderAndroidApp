@@ -48,7 +48,7 @@ class PetFinderVM(
     var predictionResult = mutableStateOf<Pair<String, Float>?>(null)
 
     val labels = listOf(
-        "cat", "dog", "horse", "elephant", "bird", "fish", //lägg med fler
+        "Cat", "Dog", "Horse", "Elephant", "Bird", "Fish", //lägg med fler
     )
 
     init {
@@ -188,26 +188,27 @@ class PetFinderVM(
                 val bitmap = uriToBitmap(context, imageUri)
 
                 if(bitmap != null) {
-                    // Preprocess the image
-                    val inputBuffer = TensorFlowLiteHelper(context,).preprocessImage(bitmap)
-                    val result = TensorFlowLiteHelper(context).runModel(inputBuffer, outputSize = 1001)
+                    val tensorFlowHelper = TensorFlowLiteHelper(context)
 
+                    val inputBuffer = tensorFlowHelper.preprocessImage(bitmap)
+                    val result = tensorFlowHelper.runModel(inputBuffer, outputSize = 1001)
                     val maxIndex = result.indices.maxByOrNull { result[it] } ?: -1
+
+                    println("maxindex : " + maxIndex)
+
                     val confidence = if (maxIndex != -1) result[maxIndex] else 0f
                     val label = if (maxIndex != -1) labels[maxIndex] else "Unknown"
 
                     predictionResult.value = Pair(label, confidence)
-                    val matchingPosts = petFinderService.searchPostsByAnimalType(label)
-                    _filteredPosts.value = matchingPosts
+                    println(predictionResult.value)
 
-                    //val (label, confidence) = result
-                    //predictionResult = result
+                    val allPosts = posts.value
+                    _filteredPosts.value = allPosts.filter { post ->
+                        post.animalType == label
+                    }
                 } else {
                     Toast.makeText(context, "Failed to convert to bitmap", Toast.LENGTH_SHORT).show()
                 }
-
-                // Handle the result (output from the model)
-
             } catch (e:Exception){
                 e.printStackTrace()
             }
@@ -215,12 +216,10 @@ class PetFinderVM(
         }
     }
 
-    fun uriToBitmap(context: Context, uri: Uri): Bitmap? {
+    private fun uriToBitmap(context: Context, uri: Uri): Bitmap? {
         return try {
             val contentResolver: ContentResolver = context.contentResolver
-            // Open the input stream for the URI
             val inputStream = contentResolver.openInputStream(uri)
-            // Decode the input stream into a Bitmap
             BitmapFactory.decodeStream(inputStream)
         } catch (e: Exception) {
             e.printStackTrace()
