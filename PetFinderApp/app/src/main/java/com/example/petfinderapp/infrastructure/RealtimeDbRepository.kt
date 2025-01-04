@@ -25,6 +25,10 @@ class RealtimeDbRepository {
     val post: StateFlow<Post>
         get() = _post
 
+    init {
+        postsRef.keepSynced(true)
+    }
+
     fun insertPost(post : Post) {
         val newPostRef = postsRef.push()
         val task = newPostRef.setValue(post)

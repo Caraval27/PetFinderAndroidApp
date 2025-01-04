@@ -1,5 +1,6 @@
 package com.example.petfinderapp.presentation.viewModel
 
+import android.app.Application
 import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.petfinderapp.application.PetFinderService
@@ -21,8 +23,10 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 
-class PetFinderVM : ViewModel() {
-    private val petFinderService : PetFinderService = PetFinderService()
+class PetFinderVM(
+    application: Application
+) : AndroidViewModel(application) {
+    private val petFinderService : PetFinderService = PetFinderService(application.applicationContext)
 
     var searchImages = mutableStateOf<List<String>>(emptyList())
         private set

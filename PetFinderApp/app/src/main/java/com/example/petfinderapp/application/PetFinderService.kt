@@ -1,6 +1,8 @@
 package com.example.petfinderapp.application
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import com.example.petfinderapp.domain.Category
 import com.example.petfinderapp.domain.Post
 import com.example.petfinderapp.domain.PostType
@@ -12,7 +14,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 
-class PetFinderService{
+class PetFinderService(
+    val applicationContext: Context
+){
     private val realtimeDbRepository : RealtimeDbRepository = RealtimeDbRepository()
     private val storageRepository : StorageRepository = StorageRepository()
 
@@ -41,6 +45,12 @@ class PetFinderService{
 
     fun startStreamingPostDetails(postId: String) {
         realtimeDbRepository.addPostDetailsListener(postId)
+    }
+
+    fun hasInternetConnection() : Boolean {
+        val connectivityManager = applicationContext.getSystemService(ConnectivityManager::class.java)
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     suspend fun searchPostsByAnimalType(animalType: String): List<Post> {
