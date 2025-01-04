@@ -42,6 +42,10 @@ class PetFinderVM(
     val post: StateFlow<Post> = petFinderService.post
 
     private var _postType = PostType.Looking
+
+    private val _hasInternetConnection = MutableStateFlow(true)
+    val hasInternetConnection: StateFlow<Boolean> = _hasInternetConnection
+
     var predictionResult = mutableStateOf<Pair<String, Float>?>(null)
 
     val labels = listOf(
@@ -86,8 +90,9 @@ class PetFinderVM(
     }
 
     fun initFeed(postType: PostType) {
-        if (postType != _postType) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            _hasInternetConnection.value = petFinderService.hasInternetConnection()
+            if (postType != _postType) {
                 petFinderService.stopStreamingPostFeed(_postType)
                 _postType = postType
                 petFinderService.startStreamingPostFeed(postType)
@@ -101,6 +106,10 @@ class PetFinderVM(
                 petFinderService.startStreamingPostDetails(postId)
             }
         }
+    }
+
+    fun setHasInternetConnection(hasInternetConnection: Boolean) {
+        _hasInternetConnection.value = hasInternetConnection
     }
 
     fun loadAnimalTypes(context: Context): List<String> {

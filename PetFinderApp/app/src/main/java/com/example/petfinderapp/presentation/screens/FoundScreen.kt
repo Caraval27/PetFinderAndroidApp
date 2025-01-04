@@ -1,5 +1,6 @@
 package com.example.petfinderapp.presentation.screens
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import com.example.petfinderapp.domain.PostType

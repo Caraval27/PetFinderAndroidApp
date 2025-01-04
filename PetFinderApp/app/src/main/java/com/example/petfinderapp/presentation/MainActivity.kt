@@ -6,6 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
@@ -27,15 +33,24 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Firebase.database.setPersistenceEnabled(true)
         petFinderVM = ViewModelProvider(this)[PetFinderVM::class.java]
         enableEdgeToEdge()
 
         setContent {
             PetFinderAppTheme {
                 val navController : NavHostController = rememberNavController()
+                val snackbarHostState = remember { SnackbarHostState() }
+                val hasInternetConnection = petFinderVM.hasInternetConnection.collectAsState()
+
+                LaunchedEffect(hasInternetConnection.value) {
+                    if (!hasInternetConnection.value) {
+                        snackbarHostState.showSnackbar("No internet connection")
+                        petFinderVM.setHasInternetConnection(true)
+                    }
+                }
 
                 Scaffold(
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
                     bottomBar = { BottomNavBar(navController) }
                 ) { innerPadding ->
                     NavHost(
