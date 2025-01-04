@@ -47,10 +47,6 @@ class PetFinderVM(
 
     var predictionResult = mutableStateOf<Pair<String, Float>?>(null)
 
-    val labels = listOf(
-        "Cat", "Dog", "Horse", "Elephant", "Bird", "Fish", //lägg med fler
-    )
-
     init {
         viewModelScope.launch {
             posts.collect { allPosts ->
@@ -138,6 +134,12 @@ class PetFinderVM(
             }
     }
 
+    fun loadLabels(context: Context): List<String> {
+        return context.assets.open("Labels.txt")
+            .bufferedReader()
+            .useLines { lines -> lines.toList() }
+    }
+
     fun loadFilterCategories(context: Context) {
         _categories.value = petFinderService.loadCategories(context)
     }
@@ -182,16 +184,17 @@ class PetFinderVM(
         searchImages.value = newImages
     }
 
-    fun searchImage(context: Context,imageUri: Uri) {
+    fun searchImage(context: Context, imageUri: Uri) {
         viewModelScope.launch {
             try {
                 val bitmap = uriToBitmap(context, imageUri)
+                val labels = loadLabels(context)
 
                 if(bitmap != null) {
                     val tensorFlowHelper = TensorFlowLiteHelper(context)
 
                     val inputBuffer = tensorFlowHelper.preprocessImage(bitmap)
-                    val result = tensorFlowHelper.runModel(inputBuffer, outputSize = 1001)
+                    val result = tensorFlowHelper.runModel(inputBuffer, outputSize = 34)
                     val maxIndex = result.indices.maxByOrNull { result[it] } ?: -1
 
                     println("maxindex : " + maxIndex)
