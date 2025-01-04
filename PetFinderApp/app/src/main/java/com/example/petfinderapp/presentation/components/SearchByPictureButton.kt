@@ -1,5 +1,6 @@
 package com.example.petfinderapp.presentation.components
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -17,7 +18,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.example.petfinderapp.R
 import com.example.petfinderapp.presentation.utils.CameraUtils.openCamera
-import com.example.petfinderapp.presentation.utils.ImageUtils.handleGalleryResult
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 
 @Composable
@@ -32,15 +32,11 @@ fun SearchByPictureButton(
     val getPictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        val updatedImages = handleGalleryResult(
-            resultCode = result.resultCode,
-            data = result.data,
-            existingImages = petFinderVM.searchImages.value
-        )
-        petFinderVM.updateSearchImages(updatedImages)
-        //anropa min egna metod, som convertar
-        //hämta första bilder från handleGalleryResults
-        //convert to bitmap
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                petFinderVM.searchImage(context, uri)
+            }
+        }
     }
 
     val takePictureLauncher = rememberLauncherForActivityResult(
@@ -48,9 +44,7 @@ fun SearchByPictureButton(
     ) { success ->
         if (success) {
             imageUri?.let { uri ->
-                val updatedImages = petFinderVM.searchImages.value + uri.toString()
-                petFinderVM.updateSearchImages(updatedImages)
-                petFinderVM.searchImage(context, imageUri!!) //varför !!
+                petFinderVM.searchImage(context, imageUri!!)
             }
         }
     }
