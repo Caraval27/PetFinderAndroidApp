@@ -13,7 +13,6 @@ Chihuahua
 Chow
 Dingo
 Doberman
-Dog
 French Bulldog
 German Shepherd
 Great Dane
