@@ -13,41 +13,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.petfinderapp.R
 import com.example.petfinderapp.domain.Category
 
 @Composable
-fun FilterButton(
+fun FilterOptions(
+    expanded: Boolean,
     categories: List<Category>,
     onCategorySelectionChange: (Category) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier
-                .clickable { expanded = !expanded }
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.filter_icon),
-                contentDescription = "Filter",
-                modifier = Modifier.size(34.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = "Filter",
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         if (expanded) {
             Row(
                 modifier = Modifier
@@ -105,28 +82,11 @@ fun CategoryItem(
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Checkbox(
-                checked = category.isSelected,
-                onCheckedChange = { isSelected ->
-                    val updatedCategory = category.copy(
-                        isSelected = isSelected,
-                        subcategories = if (!category.isSelected) {
-                            category.subcategories.map {
-                                it.copy(
-                                    isSelected = false,
-                                    subcategories = it.subcategories.map { subSubcategory -> subSubcategory.copy(isSelected = false) }
-                                )
-                            }
-                        } else {
-                            category.subcategories.map { it.copy(isSelected = false) }
-                        }
-                    )
-                    onCategorySelectionChange(updatedCategory)
-                }
-            )
             Text(
                 text = category.name,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                        .padding(16.dp)
             )
         }
 
