@@ -9,7 +9,6 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.petfinderapp.application.PetFinderService
 import com.example.petfinderapp.domain.Category
@@ -63,8 +62,8 @@ class PetFinderVM(
     fun createPost(
         title: String,
         animalType: String,
-        race: String,
-        color: String,
+        breed: List<String>,
+        color: List<String>,
         userName: String,
         phoneNumber: String,
         description: String,
@@ -76,7 +75,7 @@ class PetFinderVM(
                 title = title,
                 time = LocalDateTime.now().toString(),
                 animalType = animalType,
-                race = race,
+                breed = breed,
                 color = color,
                 userName = userName,
                 phoneNumber = phoneNumber,
@@ -166,9 +165,11 @@ class PetFinderVM(
 
         _filteredPosts.value = allPosts.filter { post ->
             val matchesAnimal = selectedAnimals.isEmpty() || selectedAnimals.keys.contains(post.animalType)
+
             val matchesBreed = selectedBreedsByAnimal[post.animalType]?.isEmpty() != false ||
-                    selectedBreedsByAnimal[post.animalType]?.contains(post.race) == true
-            val matchesColor = selectedColors.isEmpty() || selectedColors.contains(post.color)
+                    post.breed.any { breed -> selectedBreedsByAnimal[post.animalType]?.contains(breed) == true }
+
+            val matchesColor = selectedColors.isEmpty() || post.color.any { color -> selectedColors.contains(color) }
 
             matchesAnimal && matchesBreed && matchesColor
         }

@@ -123,8 +123,8 @@ fun CreatePostScreen(
             petFinderVM.createPost(
                 title = title,
                 animalType = animalType.value,
-                race = selectedBreeds.joinToString { ", " },
-                color = selectedColors.joinToString(", "), // temporärt
+                breed = selectedBreeds.toList(),
+                color = selectedColors.toList(),
                 userName = userName,
                 phoneNumber = phoneNumber,
                 description = description.text,
