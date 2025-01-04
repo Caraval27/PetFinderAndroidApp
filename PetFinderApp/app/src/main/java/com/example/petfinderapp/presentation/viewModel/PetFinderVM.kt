@@ -193,8 +193,11 @@ class PetFinderVM(
                 if(bitmap != null) {
                     val tensorFlowHelper = TensorFlowLiteHelper(context)
 
+                    // två modeller kolla först katt/hund
+                    // kolla sen färg
+                    // sist filter
                     val inputBuffer = tensorFlowHelper.preprocessImage(bitmap)
-                    val result = tensorFlowHelper.runModel(inputBuffer, outputSize = 34)
+                    val result = tensorFlowHelper.runModel(inputBuffer, outputSize = 33)
                     val maxIndex = result.indices.maxByOrNull { result[it] } ?: -1
 
                     println("maxindex : " + maxIndex)
