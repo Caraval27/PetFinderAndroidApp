@@ -10,9 +10,7 @@ import com.example.petfinderapp.domain.SubSubcategory
 import com.example.petfinderapp.domain.Subcategory
 import com.example.petfinderapp.infrastructure.RealtimeDbRepository
 import com.example.petfinderapp.infrastructure.StorageRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.withContext
 
 class PetFinderService(
     val applicationContext: Context
@@ -51,18 +49,6 @@ class PetFinderService(
         val connectivityManager = applicationContext.getSystemService(ConnectivityManager::class.java)
         val networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-    }
-
-    suspend fun searchPostsByAnimalType(animalType: String): List<Post> {
-        return withContext(Dispatchers.IO) {
-            try {
-                // Fetch posts from the repository filtered by the animal type
-                realtimeDbRepository.getPostsByAnimalType(animalType)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                emptyList() // Return an empty list if there's an error
-            }
-        }
     }
 
     fun loadCategories(context: Context): List<Category> {
