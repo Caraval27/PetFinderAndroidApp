@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -86,7 +88,13 @@ fun CategoryItem(
                 text = category.name,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
-                        .padding(16.dp)
+                    .padding(16.dp)
+                    .weight(1f)
+            )
+            Icon(
+                imageVector = if (category.isSelected) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                contentDescription = if (category.isSelected) "Collapse" else "Expand",
+                modifier = Modifier.padding(end = 16.dp)
             )
         }
 
@@ -144,7 +152,7 @@ fun CategoryItem(
 
                     if (subcategory.isSelected && subcategory.subcategories.isNotEmpty()) {
                         val scrollState = rememberScrollState()
-                        val indicatorHeight = 70.dp
+                        val indicatorHeight = 40.dp
                         val totalScrollRange = scrollState.maxValue
 
                         val indicatorOffset by derivedStateOf {
@@ -157,7 +165,7 @@ fun CategoryItem(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .heightIn(max = 200.dp)
+                                .heightIn(max = 150.dp)
                         ) {
                             Column(
                                 modifier = Modifier
@@ -242,7 +250,7 @@ fun CategoryItem(
                                         .width(4.dp)
                                         .height(indicatorHeight)
                                         .offset(y = with(LocalDensity.current) {
-                                            (indicatorOffset * (180.dp.toPx() - indicatorHeight.toPx())).toDp()
+                                            (indicatorOffset * (120.dp.toPx() - indicatorHeight.toPx())).toDp()
                                         })
                                         .background(MaterialTheme.colorScheme.primary, MaterialTheme.shapes.extraSmall)
                                 )
