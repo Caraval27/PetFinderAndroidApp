@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
@@ -29,6 +30,7 @@ fun MultiSelectDropdown(
     allowMultipleOptions: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
     val indicatorHeight = 40.dp
 
@@ -73,7 +75,10 @@ fun MultiSelectDropdown(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { expanded = !expanded },
+                        .clickable {
+                            expanded = !expanded
+                            focusManager.clearFocus()
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val displayText = when {
