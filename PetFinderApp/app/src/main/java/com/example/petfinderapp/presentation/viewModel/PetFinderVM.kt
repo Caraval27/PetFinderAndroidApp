@@ -160,16 +160,19 @@ class PetFinderVM(
         }
 
         val selectedAnimals = selectedFilters["Animal"].orEmpty()
-        val selectedColors = selectedFilters["Color"].orEmpty()
+        val selectedColors = selectedFilters["Color"]
+            ?.flatMap { it.value.ifEmpty { listOf(it.key) } }
+            ?: emptyList()
         val selectedBreedsByAnimal = selectedAnimals.mapValues { (_, breeds) -> breeds.toSet() }
 
         _filteredPosts.value = allPosts.filter { post ->
             val matchesAnimal = selectedAnimals.isEmpty() || selectedAnimals.keys.contains(post.animalType)
 
-            val matchesBreed = selectedBreedsByAnimal[post.animalType]?.isEmpty() != false ||
-                    post.breed.any { breed -> selectedBreedsByAnimal[post.animalType]?.contains(breed) == true }
+            val matchesBreed = selectedBreedsByAnimal[post.animalType]?.let { requiredBreeds ->
+                requiredBreeds.isEmpty() || requiredBreeds.all { it in post.breed }
+            } ?: true
 
-            val matchesColor = selectedColors.isEmpty() || post.color.any { color -> selectedColors.contains(color) }
+            val matchesColor = selectedColors.isEmpty() || selectedColors.all { it in post.color }
 
             matchesAnimal && matchesBreed && matchesColor
         }
