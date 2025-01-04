@@ -1,5 +1,7 @@
 package com.example.petfinderapp.presentation.screens
 
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -13,6 +15,7 @@ fun LookingScreen(
     petFinderVM: PetFinderVM,
     navController: NavHostController
 ) {
+
     LaunchedEffect(Unit) {
         petFinderVM.initFeed(PostType.Looking)
     }

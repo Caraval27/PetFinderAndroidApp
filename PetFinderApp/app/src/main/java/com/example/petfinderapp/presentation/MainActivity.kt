@@ -6,6 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
@@ -19,6 +25,8 @@ import com.example.petfinderapp.presentation.screens.LookingScreen
 import com.example.petfinderapp.presentation.screens.PostDetailsScreen
 import com.example.petfinderapp.presentation.theme.PetFinderAppTheme
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
 
 class MainActivity : ComponentActivity() {
     private lateinit var petFinderVM: PetFinderVM
@@ -31,8 +39,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             PetFinderAppTheme {
                 val navController : NavHostController = rememberNavController()
+                val snackbarHostState = remember { SnackbarHostState() }
+                val hasInternetConnection = petFinderVM.hasInternetConnection.collectAsState()
+
+                LaunchedEffect(hasInternetConnection.value) {
+                    if (!hasInternetConnection.value) {
+                        snackbarHostState.showSnackbar("No internet connection")
+                        petFinderVM.setHasInternetConnection(true)
+                    }
+                }
 
                 Scaffold(
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
                     bottomBar = { BottomNavBar(navController) }
                 ) { innerPadding ->
                     NavHost(

@@ -8,5 +8,11 @@ data class Category(
 
 data class Subcategory(
     val name: String,
-    val isSelected: Boolean = false
+    val isSelected: Boolean = false,
+    val subcategories: List<SubSubcategory> = emptyList()
+)
+
+data class SubSubcategory(
+    val name: String,
+    val isSelected: Boolean = false,
 )

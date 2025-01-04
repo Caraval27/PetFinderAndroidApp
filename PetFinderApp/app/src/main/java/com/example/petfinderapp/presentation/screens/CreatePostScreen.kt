@@ -11,6 +11,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -18,7 +19,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.Dialog
@@ -43,7 +46,6 @@ fun CreatePostScreen(
     val animalType = remember { mutableStateOf("") }
     val availableAnimalBreeds = remember { mutableStateListOf<String>() }
     val selectedBreeds = remember { mutableStateListOf<String>() }
-
     val availableColors = remember { mutableStateListOf<String>() }
     val selectedColors = remember { mutableStateListOf<String>() }
     var userName by remember { mutableStateOf("") }
@@ -60,6 +62,7 @@ fun CreatePostScreen(
     var imagesEmpty by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
         availableColors.clear()
@@ -124,8 +127,8 @@ fun CreatePostScreen(
             petFinderVM.createPost(
                 title = title,
                 animalType = animalType.value,
-                race = selectedBreeds.joinToString { ", " },
-                color = selectedColors.joinToString(", "), // temporärt
+                breed = selectedBreeds.toList(),
+                color = selectedColors.toList(),
                 userName = userName,
                 phoneNumber = phoneNumber,
                 description = description.text,
@@ -184,7 +187,12 @@ fun CreatePostScreen(
             onValueChange = { title = it },
             label = { Text("Title") },
             isError = titleEmpty,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            )
         )
         if (titleEmpty) {
             Text(
@@ -224,7 +232,12 @@ fun CreatePostScreen(
             onValueChange = { userName = it },
             label = { Text("Your name") },
             isError = usernameEmpty,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            )
         )
         if (usernameEmpty) {
             Text(
@@ -243,7 +256,14 @@ fun CreatePostScreen(
             label = { Text("Phone number") },
             modifier = Modifier.fillMaxWidth(),
             isError = phoneEmpty,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            )
         )
         if (phoneEmpty) {
             Text(
@@ -260,7 +280,12 @@ fun CreatePostScreen(
             label = { Text("Description") },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp)
+                .height(150.dp),
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            )
         )
         Spacer(modifier = Modifier.height(8.dp))
 
