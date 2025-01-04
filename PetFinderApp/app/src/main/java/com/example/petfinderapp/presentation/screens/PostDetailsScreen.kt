@@ -181,7 +181,15 @@ fun PostDetailsScreen(
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            text = "${post.value.animalType}, ${post.value.race}, ${post.value.color}",
+            text = buildString {
+                append(post.value.animalType)
+                if (post.value.breed.isNotEmpty()) {
+                    append(", ${post.value.breed.joinToString(separator = ", ")}")
+                }
+                if (post.value.color.isNotEmpty()) {
+                    append(", ${post.value.color.joinToString(separator = ", ")}")
+                }
+            },
             style = TextStyle(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
