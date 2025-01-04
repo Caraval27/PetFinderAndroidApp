@@ -1,5 +1,6 @@
 package com.example.petfinderapp.presentation.viewModel
 
+import android.app.Application
 import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,7 +8,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.petfinderapp.application.PetFinderService
 import com.example.petfinderapp.domain.Category
@@ -15,15 +16,16 @@ import com.example.petfinderapp.domain.Post
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.utils.TensorFlowLiteHelper
 
-import com.example.petfinderapp.domain.Subcategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 
-class PetFinderVM : ViewModel() {
-    private val petFinderService : PetFinderService = PetFinderService()
+class PetFinderVM(
+    application: Application
+) : AndroidViewModel(application) {
+    private val petFinderService : PetFinderService = PetFinderService(application.applicationContext)
 
     var searchImages = mutableStateOf<List<String>>(emptyList())
         private set
@@ -39,6 +41,10 @@ class PetFinderVM : ViewModel() {
     val post: StateFlow<Post> = petFinderService.post
 
     private var _postType = PostType.Looking
+
+    private val _hasInternetConnection = MutableStateFlow(true)
+    val hasInternetConnection: StateFlow<Boolean> = _hasInternetConnection
+
     var predictionResult = mutableStateOf<Pair<String, Float>?>(null)
 
     val labels = listOf(
@@ -56,8 +62,8 @@ class PetFinderVM : ViewModel() {
     fun createPost(
         title: String,
         animalType: String,
-        race: String,
-        color: String,
+        breed: List<String>,
+        color: List<String>,
         userName: String,
         phoneNumber: String,
         description: String,
@@ -69,7 +75,7 @@ class PetFinderVM : ViewModel() {
                 title = title,
                 time = LocalDateTime.now().toString(),
                 animalType = animalType,
-                race = race,
+                breed = breed,
                 color = color,
                 userName = userName,
                 phoneNumber = phoneNumber,
@@ -83,8 +89,9 @@ class PetFinderVM : ViewModel() {
     }
 
     fun initFeed(postType: PostType) {
-        if (postType != _postType) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            _hasInternetConnection.value = petFinderService.hasInternetConnection()
+            if (postType != _postType) {
                 petFinderService.stopStreamingPostFeed(_postType)
                 _postType = postType
                 petFinderService.startStreamingPostFeed(postType)
@@ -100,6 +107,10 @@ class PetFinderVM : ViewModel() {
         }
     }
 
+    fun setHasInternetConnection(hasInternetConnection: Boolean) {
+        _hasInternetConnection.value = hasInternetConnection
+    }
+
     fun loadAnimalTypes(context: Context): List<String> {
         return context.assets.open("CategoryAnimalType.txt")
             .bufferedReader()
@@ -110,21 +121,13 @@ class PetFinderVM : ViewModel() {
 
     fun loadAnimalBreeds(context: Context, animalType: String): List<String> {
         val fileName = when (animalType) {
-            "Dog" -> "CategoryDogBreeds.txt"
-            "Cat" -> "CategoryCatBreeds.txt"
+            "Dog" -> "SubcategoryDogBreeds.txt"
+            "Cat" -> "SubcategoryCatBreeds.txt"
             else -> return emptyList()
         }
         return context.assets.open(fileName)
             .bufferedReader()
             .useLines { lines -> lines.toList() }
-    }
-
-    fun loadDogBreeds(context: Context): List<Subcategory> {
-        return context.assets.open("CategoryDogBreeds.txt")
-            .bufferedReader()
-            .useLines { lines ->
-                lines.map { Subcategory(name = it, isSelected = false) }.toList()
-            }
     }
 
     fun loadColors(context: Context): List<String> {
@@ -149,27 +152,35 @@ class PetFinderVM : ViewModel() {
 
     private fun applyFilters(allPosts: List<Post>) {
         val selectedFilters = _categories.value.associate { category ->
-            category.name to category.subcategories.filter { it.isSelected }.map { it.name }
+            category.name to category.subcategories.filter { it.isSelected }
+                .associate { subcategory ->
+                    subcategory.name to subcategory.subcategories.filter { it.isSelected }
+                        .map { it.name }
+                }
         }
 
         val selectedAnimals = selectedFilters["Animal"].orEmpty()
-        val selectedColors = selectedFilters["Color"].orEmpty()
+        val selectedColors = selectedFilters["Color"]
+            ?.flatMap { it.value.ifEmpty { listOf(it.key) } }
+            ?: emptyList()
+        val selectedBreedsByAnimal = selectedAnimals.mapValues { (_, breeds) -> breeds.toSet() }
 
-        _filteredPosts.value = if (selectedAnimals.isEmpty() && selectedColors.isEmpty()) {
-            allPosts
-        } else {
-            allPosts.filter { post ->
-                val matchesAnimal = selectedAnimals.isEmpty() || selectedAnimals.contains(post.animalType)
-                val matchesColor = selectedColors.isEmpty() || selectedColors.contains(post.color)
-                matchesAnimal && matchesColor
-            }
+        _filteredPosts.value = allPosts.filter { post ->
+            val matchesAnimal = selectedAnimals.isEmpty() || selectedAnimals.keys.contains(post.animalType)
+
+            val matchesBreed = selectedBreedsByAnimal[post.animalType]?.let { requiredBreeds ->
+                requiredBreeds.isEmpty() || requiredBreeds.all { it in post.breed }
+            } ?: true
+
+            val matchesColor = selectedColors.isEmpty() || selectedColors.all { it in post.color }
+
+            matchesAnimal && matchesBreed && matchesColor
         }
     }
 
     fun updateSearchImages(newImages: List<String>) {
         searchImages.value = newImages
     }
-
 
     fun searchImage(context: Context,imageUri: Uri) {
         viewModelScope.launch {
@@ -203,7 +214,6 @@ class PetFinderVM : ViewModel() {
 
         }
     }
-
 
     fun uriToBitmap(context: Context, uri: Uri): Bitmap? {
         return try {

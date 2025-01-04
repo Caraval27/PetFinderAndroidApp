@@ -6,6 +6,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -69,30 +70,51 @@ fun SearchByPictureButton(
         )
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth(),
-        contentAlignment = Alignment.CenterEnd
     ) {
-        IconButton(
-            onClick = { expanded = true },
-            modifier = Modifier.size(48.dp)
+        Row(
+            modifier = Modifier
+                .clickable { expanded = !expanded }
+                .fillMaxWidth()
+                .padding(end = 16.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.image_search_icon),
                 contentDescription = "Search by photo",
                 modifier = Modifier.size(34.dp)
             )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = "Image search",
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
 
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.wrapContentSize(),
+            onDismissRequest = { expanded = !expanded },
+            modifier = Modifier.size(width = 180.dp, height = 110.dp),
             offset = DpOffset(x = 260.dp, y = 0.dp)
         ) {
             DropdownMenuItem(
-                text = { Text("Select photo") },
+                text = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.select_photo_icon),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Select photo")
+                    }
+                },
                 onClick = {
                     expanded = false
                     val intent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }
@@ -100,7 +122,20 @@ fun SearchByPictureButton(
                 }
             )
             DropdownMenuItem(
-                text = { Text("Take photo") },
+                text = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.take_photo_icon),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Take photo")
+                    }
+                },
                 onClick = {
                     expanded = false
                     showPermissionDialog = true
