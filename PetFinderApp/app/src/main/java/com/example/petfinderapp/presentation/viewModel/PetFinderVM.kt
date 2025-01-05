@@ -183,13 +183,14 @@ class PetFinderVM(
         viewModelScope.launch {
             try {
                 val bitmap = uriToBitmap(context, imageUri)
-                val animalTypeLabels = loadAnimalTypes(context)
+                //val animalTypeLabels = loadAnimalTypes(context)
+                val animalTypeLabels = loadAnimalBreeds(context, "Dog")
 
                 if(bitmap != null) {
                     val tensorFlowHelper = TensorFlowLiteHelper(context)
 
                     val inputBuffer = tensorFlowHelper.preprocessImage(bitmap)
-                    val result = tensorFlowHelper.runModel(inputBuffer, outputSize = 2)
+                    val result = tensorFlowHelper.runModel(inputBuffer, outputSize = 58)
                     val maxIndex = result.indices.maxByOrNull { result[it] } ?: -1
 
                     println("maxindex : " + maxIndex)
@@ -207,8 +208,9 @@ class PetFinderVM(
 
                     val allPosts = posts.value
                     _filteredPosts.value = allPosts.filter { post ->
-                        post.animalType == animalTypeLabel &&
-                        post.breed.all { it in breedLabels }
+                        //post.animalType == animalTypeLabel &&
+                        //post.breed.all { it in breedLabels }
+                        post.breed.all { it in animalTypeLabel }
                     }
                 } else {
                     Toast.makeText(context, "Failed to convert to bitmap", Toast.LENGTH_SHORT).show()
