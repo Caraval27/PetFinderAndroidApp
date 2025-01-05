@@ -27,7 +27,11 @@ fun FeedGrid(
     val filteredPosts by petFinderVM.filteredPosts.collectAsState()
 
     LaunchedEffect(Unit) {
-        petFinderVM.loadFilterCategories(context)
+        if (!petFinderVM.isReturningFromDetails) {
+            petFinderVM.loadFilterCategories(context)
+        } else {
+            petFinderVM.updateIsReturningFromDetails(false)
+        }
     }
 
     Column(

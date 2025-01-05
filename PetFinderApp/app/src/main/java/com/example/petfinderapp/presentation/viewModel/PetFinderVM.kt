@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
@@ -41,6 +42,8 @@ class PetFinderVM(
 
     private val _hasInternetConnection = MutableStateFlow(true)
     val hasInternetConnection: StateFlow<Boolean> = _hasInternetConnection
+
+    var isReturningFromDetails: Boolean = false
 
     private var predictionResult = mutableStateOf<Pair<String, Float>?>(null)
 
@@ -104,6 +107,10 @@ class PetFinderVM(
         _hasInternetConnection.value = hasInternetConnection
     }
 
+    fun updateIsReturningFromDetails(update: Boolean) {
+        isReturningFromDetails = update
+    }
+
     fun loadAnimalTypes(context: Context): List<String> {
         return context.assets.open("CategoryAnimalType.txt")
             .bufferedReader()
@@ -133,6 +140,7 @@ class PetFinderVM(
 
     fun loadFilterCategories(context: Context) {
         _categories.value = petFinderService.loadCategories(context)
+        applyFilters(posts.value)
     }
 
     fun updateFilterCategory(updatedCategory: Category) {

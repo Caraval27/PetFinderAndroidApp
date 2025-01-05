@@ -14,7 +14,8 @@ import com.example.petfinderapp.domain.Post
 @Composable
 fun ImageCard(
     post: Post,
-    navController: NavHostController) {
+    navController: NavHostController
+) {
     Image(
         painter = rememberAsyncImagePainter(model = post.images[0]),
         contentDescription = "Photo from post",
