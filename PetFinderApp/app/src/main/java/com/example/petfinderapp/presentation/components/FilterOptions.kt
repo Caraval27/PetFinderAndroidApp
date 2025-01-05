@@ -67,19 +67,7 @@ fun CategoryItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    val updatedCategory = category.copy(
-                        isSelected = !category.isSelected,
-                        subcategories = if (!category.isSelected) {
-                            category.subcategories.map {
-                                it.copy(
-                                    isSelected = false,
-                                    subcategories = it.subcategories.map { subSubcategory -> subSubcategory.copy(isSelected = false) }
-                                )
-                            }
-                        } else {
-                            category.subcategories.map { it.copy(isSelected = false) }
-                        }
-                    )
+                    val updatedCategory = category.copy(isSelected = !category.isSelected)
                     onCategorySelectionChange(updatedCategory)
                 },
             verticalAlignment = Alignment.CenterVertically
