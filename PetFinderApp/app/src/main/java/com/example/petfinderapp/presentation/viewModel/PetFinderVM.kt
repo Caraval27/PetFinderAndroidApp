@@ -27,9 +27,6 @@ class PetFinderVM(
 ) : AndroidViewModel(application) {
     private val petFinderService : PetFinderService = PetFinderService(application.applicationContext)
 
-    var searchImages = mutableStateOf<List<String>>(emptyList())
-        private set
-
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories
 
@@ -45,7 +42,7 @@ class PetFinderVM(
     private val _hasInternetConnection = MutableStateFlow(true)
     val hasInternetConnection: StateFlow<Boolean> = _hasInternetConnection
 
-    var predictionResult = mutableStateOf<Pair<String, Float>?>(null)
+    private var predictionResult = mutableStateOf<Pair<String, Float>?>(null)
 
     init {
         viewModelScope.launch {
@@ -117,8 +114,8 @@ class PetFinderVM(
 
     fun loadAnimalBreeds(context: Context, animalType: String): List<String> {
         val fileName = when (animalType) {
-            "Dog" -> "SubcategoryDogBreeds.txt"
             "Cat" -> "SubcategoryCatBreeds.txt"
+            "Dog" -> "SubcategoryDogBreeds.txt"
             else -> return emptyList()
         }
         return context.assets.open(fileName)
@@ -132,12 +129,6 @@ class PetFinderVM(
             .useLines { lines ->
                 lines.drop(1).toList()
             }
-    }
-
-    fun loadLabels(context: Context): List<String> {
-        return context.assets.open("Labels.txt")
-            .bufferedReader()
-            .useLines { lines -> lines.toList() }
     }
 
     fun loadFilterCategories(context: Context) {
@@ -180,37 +171,36 @@ class PetFinderVM(
         }
     }
 
-    fun updateSearchImages(newImages: List<String>) {
-        searchImages.value = newImages
-    }
-
     fun searchImage(context: Context, imageUri: Uri) {
         viewModelScope.launch {
             try {
                 val bitmap = uriToBitmap(context, imageUri)
-                val labels = loadLabels(context)
+                val animalTypeLabels = loadAnimalTypes(context)
 
                 if(bitmap != null) {
                     val tensorFlowHelper = TensorFlowLiteHelper(context)
 
-                    // två modeller kolla först katt/hund
-                    // kolla sen färg
-                    // sist filter
                     val inputBuffer = tensorFlowHelper.preprocessImage(bitmap)
-                    val result = tensorFlowHelper.runModel(inputBuffer, outputSize = 33)
+                    val result = tensorFlowHelper.runModel(inputBuffer, outputSize = 2)
                     val maxIndex = result.indices.maxByOrNull { result[it] } ?: -1
 
                     println("maxindex : " + maxIndex)
 
-                    val confidence = if (maxIndex != -1) result[maxIndex] else 0f
-                    val label = if (maxIndex != -1) labels[maxIndex] else "Unknown"
+                    val animalTypeConfidence = if (maxIndex != -1) result[maxIndex] else 0f
+                    val animalTypeLabel = if (maxIndex != -1) animalTypeLabels[maxIndex] else "Unknown"
 
-                    predictionResult.value = Pair(label, confidence)
+                    val breedLabels = loadAnimalBreeds(context, animalTypeLabel)
+
+                    // Välj ras modell som ska användas utifrån animalTypeLabel
+                    // ta fram breedConfidence och breedLabel för breed
+
+                    predictionResult.value = Pair(animalTypeLabel, animalTypeConfidence)
                     println(predictionResult.value)
 
                     val allPosts = posts.value
                     _filteredPosts.value = allPosts.filter { post ->
-                        post.breed.all { it in label }
+                        post.animalType == animalTypeLabel &&
+                        post.breed.all { it in breedLabels }
                     }
                 } else {
                     Toast.makeText(context, "Failed to convert to bitmap", Toast.LENGTH_SHORT).show()
