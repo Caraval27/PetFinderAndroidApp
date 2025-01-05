@@ -282,7 +282,7 @@ fun CreatePostScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(150.dp),
-            maxLines = 1,
+            maxLines = Int.MAX_VALUE,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = { focusManager.clearFocus() }
