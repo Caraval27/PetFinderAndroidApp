@@ -53,6 +53,7 @@ fun PostDetailsScreen(
 
     LaunchedEffect(postId) {
         petFinderVM.initDetails(postId)
+        petFinderVM.updateIsReturningFromDetails(true)
     }
 
     Column(
