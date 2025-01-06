@@ -2,6 +2,7 @@ package com.example.petfinderapp.presentation.screens
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -14,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
@@ -52,7 +54,8 @@ fun CreatePostScreen(
     var usernameEmpty by remember { mutableStateOf(false) }
     var phoneEmpty by remember { mutableStateOf(false) }
     var imagesEmpty by remember { mutableStateOf(false) }
-
+    val insertSucceeded = petFinderVM.insertSucceeded.collectAsState()
+    var loading by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -69,6 +72,33 @@ fun CreatePostScreen(
         if (animalType.value == "Dog") {
             availableAnimalBreeds.removeAt(10)
         }
+    }
+
+    LaunchedEffect(insertSucceeded.value) {
+        if (insertSucceeded.value == true) {
+
+            when (PostType.valueOf(postType)) {
+                PostType.Found -> navController.navigate(Screen.Found.route)
+                PostType.Looking -> navController.navigate(Screen.Looking.route)
+            }
+            title = ""
+            animalType.value = ""
+            selectedBreeds.clear()
+            selectedColors.clear()
+            userName = ""
+            phoneNumber = ""
+            description = TextFieldValue("")
+            postType = "Found"
+            selectedImages = emptyList()
+            imageUri = null
+
+            titleEmpty = false
+            usernameEmpty = false
+            phoneEmpty = false
+            imagesEmpty = false
+            petFinderVM.setInsertSucceeded(null)
+        }
+        loading = false
     }
 
     val getPictureLauncher: ActivityResultLauncher<Intent> = rememberLauncherForActivityResult(
@@ -129,25 +159,7 @@ fun CreatePostScreen(
                 postType = postTypeValue,
                 images = selectedImages
             )
-            when (PostType.valueOf(postType)) {
-                PostType.Found -> navController.navigate(Screen.Found.route)
-                PostType.Looking -> navController.navigate(Screen.Looking.route)
-            }
-            title = ""
-            animalType.value = ""
-            selectedBreeds.clear()
-            selectedColors.clear()
-            userName = ""
-            phoneNumber = ""
-            description = TextFieldValue("")
-            postType = "Found"
-            selectedImages = emptyList()
-            imageUri = null
-
-            titleEmpty = false
-            usernameEmpty = false
-            phoneEmpty = false
-            imagesEmpty = false
+            loading = true
         }
     }
 
@@ -223,9 +235,22 @@ fun CreatePostScreen(
 
         Button(
             onClick = { savePost() },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            enabled = !loading
         ) {
-            Text("Save post")
+            if (loading) {
+                CircularProgressIndicator(
+                    color = Color.LightGray,
+                    trackColor = Color.DarkGray,
+                    modifier = Modifier.size(24.dp)
+                )
+            } else {
+                Text(
+                    text = "Save post"
+                )
+            }
         }
     }
 

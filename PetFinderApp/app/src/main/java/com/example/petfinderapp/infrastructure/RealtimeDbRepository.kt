@@ -23,19 +23,25 @@ class RealtimeDbRepository {
     private val _post = MutableStateFlow(Post())
     val post: StateFlow<Post>
         get() = _post
+    private val _insertSucceeded = MutableStateFlow<Boolean?>(null)
+    val insertSucceeded: StateFlow<Boolean?>
+        get() = _insertSucceeded
 
     init {
         postsRef.keepSynced(true)
     }
 
     fun insertPost(post : Post) {
+        _insertSucceeded.value = null
         val newPostRef = postsRef.push()
         val task = newPostRef.setValue(post)
         task.addOnSuccessListener {
             Log.d("RealtimeDbRepository", "Succeeded to insert post")
+            _insertSucceeded.value = true
         }
         task.addOnFailureListener {
             Log.e("RealtimeDbRepository", "Failed to insert post", it)
+            _insertSucceeded.value = false
         }
     }
 

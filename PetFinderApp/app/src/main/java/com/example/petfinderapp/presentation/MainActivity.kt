@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
@@ -41,11 +40,19 @@ class MainActivity : ComponentActivity() {
                 val navController : NavHostController = rememberNavController()
                 val snackbarHostState = remember { SnackbarHostState() }
                 val hasInternetConnection = petFinderVM.hasInternetConnection.collectAsState()
+                val insertSucceeded = petFinderVM.insertSucceeded.collectAsState()
 
                 LaunchedEffect(hasInternetConnection.value) {
                     if (!hasInternetConnection.value) {
                         snackbarHostState.showSnackbar("No internet connection")
                         petFinderVM.setHasInternetConnection(true)
+                    }
+                }
+
+                LaunchedEffect(insertSucceeded.value) {
+                    if (insertSucceeded.value == false) {
+                        snackbarHostState.showSnackbar("Error creating post")
+                        petFinderVM.setInsertSucceeded(null)
                     }
                 }
 
