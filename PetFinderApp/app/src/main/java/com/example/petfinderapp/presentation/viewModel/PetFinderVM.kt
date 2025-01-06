@@ -190,7 +190,7 @@ class PetFinderVM(
                     val tensorFlowHelper = TensorFlowLiteHelper(context)
 
                     val inputBuffer = tensorFlowHelper.preprocessImage(bitmap)
-                    val result = tensorFlowHelper.runModel(inputBuffer, outputSize = 59)
+                    val result = tensorFlowHelper.runModel(inputBuffer, outputSize = 58)
                     val maxIndex = result.indices.maxByOrNull { result[it] } ?: -1
 
                     println("maxindex : " + maxIndex)
