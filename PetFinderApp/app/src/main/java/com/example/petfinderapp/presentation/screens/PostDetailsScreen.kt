@@ -20,7 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -33,11 +32,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.petfinderapp.R
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 import java.time.LocalDateTime
@@ -149,8 +150,9 @@ fun PostDetailsScreen(
                 }
                 PostType.Found -> {
                     Icon(
-                        imageVector = Icons.Filled.Check,
+                        painter = painterResource(id = R.drawable.found_icon),
                         contentDescription = "Found a pet",
+                        modifier = Modifier.size(24.dp),
                         tint = Color(0xFF1C7520)
                     )
                     Text(
