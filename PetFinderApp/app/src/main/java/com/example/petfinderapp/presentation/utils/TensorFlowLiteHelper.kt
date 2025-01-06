@@ -25,7 +25,7 @@ class TensorFlowLiteHelper(context: Context) {
     init {
         // Open the model file from assets
         val assetManager = context.assets
-        val modelFileDescriptor = assetManager.openFd("tflitemodel.tflite")
+        val modelFileDescriptor = assetManager.openFd("trained_model_dog_photos_40_epochs.tflite")
         val modelFileInputStream = modelFileDescriptor.createInputStream()
 
         // Use MappedByteBuffer to load the model
