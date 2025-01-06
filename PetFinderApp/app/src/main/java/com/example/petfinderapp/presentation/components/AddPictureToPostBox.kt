@@ -125,10 +125,10 @@ fun AddPictureToPostBox(
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.select_photo_icon),
-                                contentDescription = "Select photo",
+                                contentDescription = "Select photos",
                                 modifier = Modifier.size(36.dp)
                             )
-                            Text("Select photo", style = MaterialTheme.typography.bodySmall)
+                            Text("Select photos", style = MaterialTheme.typography.bodySmall)
                         }
                         Spacer(modifier = Modifier.height(16.dp))
 
