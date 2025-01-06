@@ -9,26 +9,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.presentation.Screen
-import com.example.petfinderapp.presentation.components.CreatePostAddPicture
+import com.example.petfinderapp.presentation.components.CreatePostAddImage
 import com.example.petfinderapp.presentation.components.CreatePostForm
+import com.example.petfinderapp.presentation.components.FullScreenImageDialog
 import com.example.petfinderapp.presentation.components.RequestCameraPermission
 import com.example.petfinderapp.presentation.utils.CameraUtils.openCamera
 import com.example.petfinderapp.presentation.utils.ImageUtils.handleGalleryResult
@@ -172,7 +166,7 @@ fun CreatePostScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        CreatePostAddPicture(
+        CreatePostAddImage(
             selectedImages = selectedImages,
             imagesEmpty = imagesEmpty,
             onImageSelected = { newImages -> selectedImages = newImages },
@@ -236,63 +230,11 @@ fun CreatePostScreen(
     }
 
     fullScreenImageIndex?.let { index ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.7f))
-                .blur(50.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Dialog(onDismissRequest = { fullScreenImageIndex = null }) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(model = selectedImages[index]),
-                            contentDescription = "Selected photo",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(0.5f)
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        LazyRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(100.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(selectedImages.reversed()) { uri ->
-                                Image(
-                                    painter = rememberAsyncImagePainter(model = uri),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .clickable {
-                                            fullScreenImageIndex = selectedImages.indexOf(uri)
-                                        }
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Button(onClick = { fullScreenImageIndex = null }) {
-                            Text("Close")
-                        }
-                    }
-                }
-            }
-        }
+        FullScreenImageDialog(
+            selectedImages = selectedImages,
+            fullScreenImageIndex = fullScreenImageIndex!!,
+            onClose = { fullScreenImageIndex = null },
+            onImageSelected = { uri -> fullScreenImageIndex = uri }
+        )
     }
 }
