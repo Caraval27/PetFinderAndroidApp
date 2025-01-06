@@ -44,8 +44,6 @@ class PetFinderVM(
 
     var isReturningFromDetails: Boolean = false
 
-    private var predictionResult = mutableStateOf<Pair<String, Float>?>(null)
-
     init {
         viewModelScope.launch {
             posts.collect { allPosts ->
@@ -184,29 +182,21 @@ class PetFinderVM(
                 val bitmap = uriToBitmap(context, imageUri)
 
                 if(bitmap != null) {
-                    //Load labels
+                    val predictionResult = mutableStateOf<Pair<String, Float>?>(null)
                     val animalTypeLabels = loadAnimalTypes(context)
-                    val dogBreedLabels = loadAnimalBreeds(context, "Dog")
-                    val catBreedLabels = loadAnimalBreeds(context, "Cat")
-
-                    //Load different ML models
                     val animalTypeModel = TensorFlowLiteHelper(context, "trained_model_cat_and_dog.tflite")
-                    val dogBreedModel = TensorFlowLiteHelper(context, "trained_model_dog_photos_40_epochs.tflite")
-                    val catBreedModel = TensorFlowLiteHelper(context, "trained_model_cat_photos_40_epochs.tflite")
+                    val allPosts = posts.value
 
-                    //Determine animal type (cat or dog)
                     val (animalTypeLabel, animalTypeConfidence) = extractAnimalType(bitmap, animalTypeModel, animalTypeLabels)
                     predictionResult.value = Pair(animalTypeLabel, animalTypeConfidence)
                     println(predictionResult.value)
 
-                    val allPosts = posts.value
-
                     if (animalTypeLabel == "Dog") {
-                        //Determine dog breeds
+                        val dogBreedLabels = loadAnimalBreeds(context, "Dog")
+                        val dogBreedModel = TensorFlowLiteHelper(context, "trained_model_dog_photos_40_epochs.tflite")
                         val matchingDogBreeds = extractDogBreed(bitmap, dogBreedModel, dogBreedLabels)
 
                         if (matchingDogBreeds.isEmpty()) {
-                            //If there are no breeds with a match of at least 50% confidence
                             _filteredPosts.value = allPosts.filter { post ->
                                 post.animalType == animalTypeLabel
                             }
@@ -216,12 +206,11 @@ class PetFinderVM(
                             }
                         }
                     } else if (animalTypeLabel == "Cat") {
-                        //Determine cat breeds
+                        val catBreedLabels = loadAnimalBreeds(context, "Cat")
+                        val catBreedModel = TensorFlowLiteHelper(context, "trained_model_cat_photos_40_epochs.tflite")
                         val matchingCatBreeds = extractCatBreed(bitmap, catBreedModel, catBreedLabels)
 
-
                         if (matchingCatBreeds.isEmpty()) {
-                            //If there are no breeds with a match of at least 50% confidence
                             _filteredPosts.value = allPosts.filter { post ->
                                 post.animalType == animalTypeLabel
                             }
@@ -268,7 +257,7 @@ class PetFinderVM(
         return dogBreedLabelsWithConfidence
     }
 
-    fun extractCatBreed(bitmap: Bitmap, model: TensorFlowLiteHelper, labels: List<String>): List<Pair<String, Float>> {
+    private fun extractCatBreed(bitmap: Bitmap, model: TensorFlowLiteHelper, labels: List<String>): List<Pair<String, Float>> {
         val inputBuffer = model.preprocessImage(bitmap)
         val result = model.runModel(inputBuffer, outputSize = 38)
         val catBreedLabelsWithConfidence = mutableListOf<Pair<String, Float>>()
