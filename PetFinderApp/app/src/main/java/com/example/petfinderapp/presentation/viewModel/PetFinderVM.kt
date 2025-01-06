@@ -182,14 +182,13 @@ class PetFinderVM(
                 val bitmap = uriToBitmap(context, imageUri)
 
                 if(bitmap != null) {
-                    val predictionResult = mutableStateOf<Pair<String, Float>?>(null)
                     val animalTypeLabels = loadAnimalTypes(context)
                     val animalTypeModel = TensorFlowLiteHelper(context, "trained_model_cat_and_dog.tflite")
                     val allPosts = posts.value
 
                     val (animalTypeLabel, animalTypeConfidence) = extractAnimalType(bitmap, animalTypeModel, animalTypeLabels)
-                    predictionResult.value = Pair(animalTypeLabel, animalTypeConfidence)
-                    println(predictionResult.value)
+                    val predictionResult = Pair(animalTypeLabel, animalTypeConfidence)
+                    println(predictionResult)
 
                     if (animalTypeLabel == "Dog") {
                         val dogBreedLabels = loadAnimalBreeds(context, "Dog")
@@ -222,7 +221,6 @@ class PetFinderVM(
                     } else {
                         Toast.makeText(context, "No matches on image search", Toast.LENGTH_SHORT).show()
                     }
-
                 } else {
                     Toast.makeText(context, "Failed to load picture", Toast.LENGTH_SHORT).show()
                 }
