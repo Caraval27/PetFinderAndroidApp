@@ -1,6 +1,7 @@
 package com.example.petfinderapp.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -87,6 +88,17 @@ fun CategoryItem(
         }
 
         if (category.isSelected && category.subcategories.isNotEmpty()) {
+            val colorMap = mapOf(
+                "Black" to Color.Black,
+                "Brown" to Color(0xFF8B4513),
+                "Cream" to Color(0xFFFFFDD0),
+                "Fawn" to Color(0xFFE5AA70),
+                "Gray" to Color.Gray,
+                "Orange" to Color(0xFFFFA500),
+                "Red" to Color(0xFFB55239),
+                "White" to Color.White
+            )
+
             Column(modifier = Modifier.padding(start = 32.dp)) {
                 category.subcategories.forEach { subcategory ->
                     Row(
@@ -98,7 +110,11 @@ fun CategoryItem(
                                         it.copy(
                                             isSelected = !subcategory.isSelected,
                                             subcategories = if (!subcategory.isSelected) {
-                                                it.subcategories.map { subSubcategory -> subSubcategory.copy(isSelected = false) }
+                                                it.subcategories.map { subSubcategory ->
+                                                    subSubcategory.copy(
+                                                        isSelected = false
+                                                    )
+                                                }
                                             } else {
                                                 it.subcategories
                                             }
@@ -111,31 +127,50 @@ fun CategoryItem(
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Checkbox(
-                            checked = subcategory.isSelected,
-                            onCheckedChange = { isSelected ->
-                                val updatedSubcategories = category.subcategories.map {
-                                    if (it.name == subcategory.name) {
-                                        it.copy(
-                                            isSelected = !subcategory.isSelected,
-                                            subcategories = if (!subcategory.isSelected) {
-                                                it.subcategories.map { subSubcategory -> subSubcategory.copy(isSelected = false) }
-                                            } else {
-                                                it.subcategories
-                                            }
-                                        )
-                                    } else {
-                                        it
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Checkbox(
+                                checked = subcategory.isSelected,
+                                onCheckedChange = { isSelected ->
+                                    val updatedSubcategories = category.subcategories.map {
+                                        if (it.name == subcategory.name) {
+                                            it.copy(
+                                                isSelected = !subcategory.isSelected,
+                                                subcategories = if (!subcategory.isSelected) {
+                                                    it.subcategories.map { subSubcategory ->
+                                                        subSubcategory.copy(
+                                                            isSelected = false
+                                                        )
+                                                    }
+                                                } else {
+                                                    it.subcategories
+                                                }
+                                            )
+                                        } else {
+                                            it
+                                        }
                                     }
+                                    onCategorySelectionChange(category.copy(subcategories = updatedSubcategories))
                                 }
-                                onCategorySelectionChange(category.copy(subcategories = updatedSubcategories))
-                            }
-                        )
-                        Text(
-                            text = subcategory.name,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.DarkGray
-                        )
+                            )
+                            Text(
+                                text = subcategory.name,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.DarkGray
+                            )
+                        }
+
+                        if (category.name == "Color") {
+                            Box(
+                                modifier = Modifier
+                                    .padding(end = 36.dp)
+                                    .size(16.dp)
+                                    .background(colorMap[subcategory.name] ?: Color.Transparent)
+                                    .border(1.dp, Color.DarkGray)
+                            )
+                        }
                     }
 
                     if (subcategory.isSelected && subcategory.subcategories.isNotEmpty()) {
@@ -240,7 +275,10 @@ fun CategoryItem(
                                         .offset(y = with(LocalDensity.current) {
                                             (indicatorOffset * (120.dp.toPx() - indicatorHeight.toPx())).toDp()
                                         })
-                                        .background(MaterialTheme.colorScheme.primary, MaterialTheme.shapes.extraSmall)
+                                        .background(
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.shapes.extraSmall
+                                        )
                                 )
                             }
                         }

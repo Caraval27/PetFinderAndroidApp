@@ -49,6 +49,17 @@ fun MultiSelectDropdown(
         else -> !selectedOption?.value.isNullOrEmpty()
     }
 
+    val colorMap = mapOf(
+        "Black" to Color.Black,
+        "Brown" to Color(0xFF8B4513),
+        "Cream" to Color(0xFFFFFDD0),
+        "Fawn" to Color(0xFFE5AA70),
+        "Gray" to Color.Gray,
+        "Orange" to Color(0xFFFFA500),
+        "Red" to Color(0xFFB55239),
+        "White" to Color.White
+    )
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -137,25 +148,40 @@ fun MultiSelectDropdown(
                                         },
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Checkbox(
-                                        checked = if (allowMultipleOptions) {
-                                            option in (selectedOptions ?: emptyList())
-                                        } else {
-                                            selectedOption?.value == option
-                                        },
-                                        onCheckedChange = {
-                                            if (allowMultipleOptions) {
-                                                selectedOptions?.let { list ->
-                                                    if (it) list.add(option) else list.remove(option)
-                                                }
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Checkbox(
+                                            checked = if (allowMultipleOptions) {
+                                                option in (selectedOptions ?: emptyList())
                                             } else {
-                                                selectedOption?.value = option
-                                                expanded = false
+                                                selectedOption?.value == option
+                                            },
+                                            onCheckedChange = {
+                                                if (allowMultipleOptions) {
+                                                    selectedOptions?.let { list ->
+                                                        if (it) list.add(option) else list.remove(option)
+                                                    }
+                                                } else {
+                                                    selectedOption?.value = option
+                                                    expanded = false
+                                                }
                                             }
-                                        }
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(option, style = MaterialTheme.typography.bodyMedium)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(option, style = MaterialTheme.typography.bodyMedium)
+                                    }
+
+                                    if (text == "Colors") {
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(end = 32.dp)
+                                                .size(16.dp)
+                                                .background(colorMap[option] ?: Color.Transparent)
+                                                .border(1.dp, Color.DarkGray)
+                                        )
+                                    }
                                 }
                             }
                         }
