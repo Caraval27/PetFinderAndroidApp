@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -327,52 +329,60 @@ fun CreatePostScreen(
     }
 
     fullScreenImageIndex?.let { index ->
-        Dialog(onDismissRequest = { fullScreenImageIndex = null }) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxSize()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.7f))
+                .blur(50.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Dialog(onDismissRequest = { fullScreenImageIndex = null }) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(model = selectedImages[index]),
-                        contentDescription = "Selected photo",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(0.5f)
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(100.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        items(selectedImages.reversed()) { uri ->
-                            Image(
-                                painter = rememberAsyncImagePainter(model = uri),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(100.dp)
-                                    .clickable {
-                                        fullScreenImageIndex = selectedImages.indexOf(uri)
-                                    }
-                            )
+                        Image(
+                            painter = rememberAsyncImagePainter(model = selectedImages[index]),
+                            contentDescription = "Selected photo",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(0.5f)
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(selectedImages.reversed()) { uri ->
+                                Image(
+                                    painter = rememberAsyncImagePainter(model = uri),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .clickable {
+                                            fullScreenImageIndex = selectedImages.indexOf(uri)
+                                        }
+                                )
+                            }
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Button(onClick = { fullScreenImageIndex = null }) {
-                        Text("Close")
+                        Button(onClick = { fullScreenImageIndex = null }) {
+                            Text("Close")
+                        }
                     }
                 }
             }
