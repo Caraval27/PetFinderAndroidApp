@@ -18,7 +18,7 @@ import com.example.petfinderapp.R
 import com.example.petfinderapp.presentation.utils.ImageUtils.openGallery
 
 @Composable
-fun CreatePostAddPicture(
+fun CreatePostAddImage(
     selectedImages: List<String>,
     imagesEmpty: Boolean,
     onImageSelected: (List<String>) -> Unit,
