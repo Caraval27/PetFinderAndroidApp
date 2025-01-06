@@ -11,8 +11,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
@@ -22,10 +20,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
@@ -33,7 +28,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.presentation.Screen
 import com.example.petfinderapp.presentation.components.CreatePostAddPicture
-import com.example.petfinderapp.presentation.components.MultiSelectDropdown
+import com.example.petfinderapp.presentation.components.CreatePostForm
 import com.example.petfinderapp.presentation.components.RequestCameraPermission
 import com.example.petfinderapp.presentation.utils.CameraUtils.openCamera
 import com.example.petfinderapp.presentation.utils.ImageUtils.handleGalleryResult
@@ -65,7 +60,6 @@ fun CreatePostScreen(
     var imagesEmpty by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
         availableColors.clear()
@@ -188,112 +182,25 @@ fun CreatePostScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Title") },
-            isError = titleEmpty,
-            modifier = Modifier.fillMaxWidth(),
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
-            )
+        CreatePostForm(
+            title = title,
+            onTitleChange = { title = it },
+            titleEmpty = titleEmpty,
+            availableAnimalTypes = availableAnimalTypes,
+            animalType = animalType,
+            availableAnimalBreeds = availableAnimalBreeds,
+            selectedBreeds = selectedBreeds,
+            availableColors = availableColors,
+            selectedColors = selectedColors,
+            userName = userName,
+            onUserNameChange = { userName = it },
+            usernameEmpty = usernameEmpty,
+            phoneNumber = phoneNumber,
+            onPhoneNumberChange = { input -> phoneNumber = input.filter { it.isDigit() || it == '+' || it == '-' } },
+            phoneEmpty = phoneEmpty,
+            description = description,
+            onDescriptionChange = { description = it }
         )
-        if (titleEmpty) {
-            Text(
-                "Title is required",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        MultiSelectDropdown(
-            text = "Type of animal",
-            availableOptions = availableAnimalTypes,
-            selectedOption = animalType,
-            allowMultipleOptions = false
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (animalType.value.isNotEmpty()) {
-            MultiSelectDropdown(
-                text = animalType.value + " breed",
-                availableOptions = availableAnimalBreeds,
-                selectedOptions = selectedBreeds
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        MultiSelectDropdown(
-            text = "Colors",
-            availableOptions = availableColors,
-            selectedOptions = selectedColors
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = userName,
-            onValueChange = { userName = it },
-            label = { Text("Your name") },
-            isError = usernameEmpty,
-            modifier = Modifier.fillMaxWidth(),
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
-            )
-        )
-        if (usernameEmpty) {
-            Text(
-                "Name is required",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = phoneNumber,
-            onValueChange = { input ->
-                phoneNumber = input.filter { it.isDigit() || it == '+' || it == '-' }
-            },
-            label = { Text("Phone number") },
-            modifier = Modifier.fillMaxWidth(),
-            isError = phoneEmpty,
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
-            )
-        )
-        if (phoneEmpty) {
-            Text(
-                "Phone number is required",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Description") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp),
-            maxLines = Int.MAX_VALUE,
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
