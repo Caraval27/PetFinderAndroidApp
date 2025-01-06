@@ -70,7 +70,9 @@ class PetFinderService(
 
                             val breeds = breedsFileName?.let { breedFile ->
                                 context.assets.open(breedFile).bufferedReader().useLines { lines ->
-                                    lines.map { SubSubcategory(name = it) }.toList()
+                                    lines.mapIndexedNotNull { index, line ->
+                                        if (subcategoryName == "Dog" && index == 10) null else SubSubcategory(name = line)
+                                    }.toList()
                                 }
                             } ?: emptyList()
 
