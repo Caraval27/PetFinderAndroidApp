@@ -32,7 +32,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.presentation.Screen
-import com.example.petfinderapp.presentation.components.AddPictureToPostBox
+import com.example.petfinderapp.presentation.components.CreatePostAddPicture
 import com.example.petfinderapp.presentation.components.MultiSelectDropdown
 import com.example.petfinderapp.presentation.components.RequestCameraPermission
 import com.example.petfinderapp.presentation.utils.CameraUtils.openCamera
@@ -178,7 +178,7 @@ fun CreatePostScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        AddPictureToPostBox(
+        CreatePostAddPicture(
             selectedImages = selectedImages,
             imagesEmpty = imagesEmpty,
             onImageSelected = { newImages -> selectedImages = newImages },
