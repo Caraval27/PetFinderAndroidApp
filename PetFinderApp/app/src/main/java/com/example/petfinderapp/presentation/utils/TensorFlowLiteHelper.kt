@@ -7,7 +7,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 
-class TensorFlowLiteHelper(context: Context) {
+class TensorFlowLiteHelper(context: Context, modelName: String) {
     private val interpreter: Interpreter
 
     /*
@@ -25,7 +25,7 @@ class TensorFlowLiteHelper(context: Context) {
     init {
         // Open the model file from assets
         val assetManager = context.assets
-        val modelFileDescriptor = assetManager.openFd("trained_model_dog_photos_40_epochs.tflite")
+        val modelFileDescriptor = assetManager.openFd(modelName)
         val modelFileInputStream = modelFileDescriptor.createInputStream()
 
         // Use MappedByteBuffer to load the model
