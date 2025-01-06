@@ -136,14 +136,14 @@ fun PostDetailsScreen(
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = "Looking for a pet",
-                        tint = Color.Blue
+                        tint = Color(0xFF1968A6)
                     )
                     Text(
                         text = "Looking",
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Color.Blue
+                            color = Color(0xFF1968A6)
                         )
                     )
                 }
@@ -151,14 +151,14 @@ fun PostDetailsScreen(
                     Icon(
                         imageVector = Icons.Filled.Check,
                         contentDescription = "Found a pet",
-                        tint = Color.Green
+                        tint = Color(0xFF1C7520)
                     )
                     Text(
                         text = "Found",
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Color.Green
+                            color = Color(0xFF1C7520)
                         )
                     )
                 }
