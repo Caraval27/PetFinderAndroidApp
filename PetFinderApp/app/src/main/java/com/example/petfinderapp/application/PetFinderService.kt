@@ -20,6 +20,7 @@ class PetFinderService(
 
     val posts: StateFlow<List<Post>> = realtimeDbRepository.posts
     val post: StateFlow<Post> = realtimeDbRepository.post
+    val insertSucceeded: StateFlow<Boolean?> = realtimeDbRepository.insertSucceeded
 
     suspend fun createPost(post : Post) {
         val downloadUris : MutableList<String> = mutableListOf()

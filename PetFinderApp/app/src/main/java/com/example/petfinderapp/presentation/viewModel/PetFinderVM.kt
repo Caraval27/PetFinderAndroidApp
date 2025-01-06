@@ -19,6 +19,7 @@ import com.example.petfinderapp.utils.TensorFlowLiteHelper
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -38,6 +39,9 @@ class PetFinderVM(
 
     val post: StateFlow<Post> = petFinderService.post
 
+    val _insertSucceeded = MutableStateFlow<Boolean?>(null)
+    val insertSucceeded : StateFlow<Boolean?> = _insertSucceeded
+
     private var _postType = PostType.Looking
 
     private val _hasInternetConnection = MutableStateFlow(true)
@@ -51,6 +55,11 @@ class PetFinderVM(
         viewModelScope.launch {
             posts.collect { allPosts ->
                 applyFilters(allPosts)
+            }
+        }
+        viewModelScope.launch {
+            petFinderService.insertSucceeded.collect {
+                _insertSucceeded.value = it
             }
         }
     }
@@ -80,6 +89,7 @@ class PetFinderVM(
                 images = images
             )
         viewModelScope.launch {
+            _hasInternetConnection.value = petFinderService.hasInternetConnection()
             petFinderService.createPost(post)
         }
     }
@@ -105,6 +115,10 @@ class PetFinderVM(
 
     fun setHasInternetConnection(hasInternetConnection: Boolean) {
         _hasInternetConnection.value = hasInternetConnection
+    }
+
+    fun setInsertSucceeded(insertSucceeded: Boolean?) {
+        _insertSucceeded.value = insertSucceeded
     }
 
     fun updateIsReturningFromDetails(update: Boolean) {
