@@ -20,7 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -33,11 +32,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.petfinderapp.R
 import com.example.petfinderapp.domain.PostType
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 import java.time.LocalDateTime
@@ -136,29 +137,30 @@ fun PostDetailsScreen(
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = "Looking for a pet",
-                        tint = Color.Blue
+                        tint = Color(0xFF1968A6)
                     )
                     Text(
                         text = "Looking",
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Color.Blue
+                            color = Color(0xFF1968A6)
                         )
                     )
                 }
                 PostType.Found -> {
                     Icon(
-                        imageVector = Icons.Filled.Check,
+                        painter = painterResource(id = R.drawable.found_icon),
                         contentDescription = "Found a pet",
-                        tint = Color.Green
+                        modifier = Modifier.size(24.dp),
+                        tint = Color(0xFF1C7520)
                     )
                     Text(
                         text = "Found",
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Color.Green
+                            color = Color(0xFF1C7520)
                         )
                     )
                 }
