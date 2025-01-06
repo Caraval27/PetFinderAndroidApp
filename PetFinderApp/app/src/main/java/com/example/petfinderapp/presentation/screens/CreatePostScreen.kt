@@ -76,6 +76,9 @@ fun CreatePostScreen(
         availableAnimalBreeds.clear()
         selectedBreeds.clear()
         availableAnimalBreeds.addAll(petFinderVM.loadAnimalBreeds(context, animalType.value))
+        if (animalType.value == "Dog") {
+            availableAnimalBreeds.removeAt(10)
+        }
     }
 
     val getPictureLauncher: ActivityResultLauncher<Intent> = rememberLauncherForActivityResult(
