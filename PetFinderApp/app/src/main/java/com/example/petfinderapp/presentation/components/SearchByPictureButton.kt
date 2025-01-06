@@ -10,9 +10,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,7 @@ fun SearchByPictureButton(
     var expanded by remember { mutableStateOf(false) }
     var imageUri: Uri? by remember { mutableStateOf(null) }
     var showPermissionDialog by remember { mutableStateOf(false) }
+    var showClearIcon by remember { mutableStateOf(false) }
 
     val getPictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -35,6 +39,7 @@ fun SearchByPictureButton(
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
                 petFinderVM.searchImage(context, uri)
+                showClearIcon = true
             }
         }
     }
@@ -45,6 +50,7 @@ fun SearchByPictureButton(
         if (success) {
             imageUri?.let { uri ->
                 petFinderVM.searchImage(context, imageUri!!)
+                showClearIcon = true
             }
         }
     }
@@ -86,6 +92,22 @@ fun SearchByPictureButton(
                 text = "Image search",
                 style = MaterialTheme.typography.bodyLarge
             )
+
+            if (showClearIcon) {
+                Spacer(modifier = Modifier.width(8.dp))
+                IconButton(
+                    onClick = {
+                        petFinderVM.loadFilterCategories(context)
+                        showClearIcon = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Clear search",
+                        tint = Color(0xFF9D2A2A)
+                    )
+                }
+            }
         }
 
         DropdownMenu(
