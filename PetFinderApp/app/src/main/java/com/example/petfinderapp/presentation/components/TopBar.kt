@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,7 +44,8 @@ fun TopBar(
             modifier = Modifier
                 .weight(1f)
                 .clickable { expanded = !expanded }
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .height(40.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

@@ -72,13 +72,14 @@ fun SearchByPictureButton(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
                 .clickable { expanded = !expanded }
                 .fillMaxWidth()
-                .padding(end = 16.dp),
+                .padding(end = 16.dp)
+                .height(40.dp),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
