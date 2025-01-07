@@ -15,7 +15,7 @@ import com.example.petfinderapp.domain.SubSubcategory
 import com.example.petfinderapp.domain.Subcategory
 import com.example.petfinderapp.infrastructure.RealtimeDbRepository
 import com.example.petfinderapp.infrastructure.StorageRepository
-import com.example.petfinderapp.infrastructure.TFLiteRepository
+import com.example.petfinderapp.infrastructure.TensorFlowLiteHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -170,7 +170,7 @@ class PetFinderService(
 
             if(bitmap != null) {
                 val animalTypeLabels = loadAnimalTypes(context)
-                val animalTypeModel = TFLiteRepository(context, "trained_model_cat_and_dog.tflite")
+                val animalTypeModel = TensorFlowLiteHelper(context, "trained_model_cat_and_dog.tflite")
                 val allPosts = posts.value
 
                 val (animalTypeLabel, animalTypeConfidence) = extractAnimalType(bitmap, animalTypeModel, animalTypeLabels)
@@ -179,7 +179,7 @@ class PetFinderService(
 
                 if (animalTypeLabel == "Dog") {
                     val dogBreedLabels = loadAnimalBreeds(context, "Dog")
-                    val dogBreedModel = TFLiteRepository(context, "trained_model_dog_photos_40_epochs.tflite")
+                    val dogBreedModel = TensorFlowLiteHelper(context, "trained_model_dog_photos_40_epochs.tflite")
                     val matchingDogBreeds = extractDogBreed(bitmap, dogBreedModel, dogBreedLabels)
 
                     if (matchingDogBreeds.isEmpty()) {
@@ -193,7 +193,7 @@ class PetFinderService(
                     }
                 } else if (animalTypeLabel == "Cat") {
                     val catBreedLabels = loadAnimalBreeds(context, "Cat")
-                    val catBreedModel = TFLiteRepository(context, "trained_model_cat_photos_40_epochs.tflite")
+                    val catBreedModel = TensorFlowLiteHelper(context, "trained_model_cat_photos_40_epochs.tflite")
                     val matchingCatBreeds = extractCatBreed(bitmap, catBreedModel, catBreedLabels)
 
                     if (matchingCatBreeds.isEmpty()) {
@@ -220,7 +220,7 @@ class PetFinderService(
         }
     }
 
-    private fun extractAnimalType(bitmap: Bitmap, model: TFLiteRepository, labels: List<String>): Pair<String, Float> {
+    private fun extractAnimalType(bitmap: Bitmap, model: TensorFlowLiteHelper, labels: List<String>): Pair<String, Float> {
         val inputBuffer = model.preprocessImage(bitmap)
         val result = model.runModel(inputBuffer, outputSize = 2)
         val maxIndex = result.indices.maxByOrNull { result[it] } ?: -1
@@ -229,7 +229,7 @@ class PetFinderService(
         return Pair(label, confidence)
     }
 
-    private fun extractDogBreed(bitmap: Bitmap, model: TFLiteRepository, labels: List<String>): List<Pair<String, Float>> {
+    private fun extractDogBreed(bitmap: Bitmap, model: TensorFlowLiteHelper, labels: List<String>): List<Pair<String, Float>> {
         val inputBuffer = model.preprocessImage(bitmap)
         val result = model.runModel(inputBuffer, outputSize = 58)
         val dogBreedLabelsWithConfidence = mutableListOf<Pair<String, Float>>()
@@ -245,7 +245,7 @@ class PetFinderService(
         return dogBreedLabelsWithConfidence
     }
 
-    private fun extractCatBreed(bitmap: Bitmap, model: TFLiteRepository, labels: List<String>): List<Pair<String, Float>> {
+    private fun extractCatBreed(bitmap: Bitmap, model: TensorFlowLiteHelper, labels: List<String>): List<Pair<String, Float>> {
         val inputBuffer = model.preprocessImage(bitmap)
         val result = model.runModel(inputBuffer, outputSize = 38)
         val catBreedLabelsWithConfidence = mutableListOf<Pair<String, Float>>()

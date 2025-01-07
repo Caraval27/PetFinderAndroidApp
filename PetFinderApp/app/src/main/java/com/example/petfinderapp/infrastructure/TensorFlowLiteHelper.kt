@@ -7,7 +7,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 
-class TFLiteRepository(context: Context, modelName: String) {
+class TensorFlowLiteHelper(context: Context, modelName: String) {
     private val interpreter: Interpreter
 
     init {
