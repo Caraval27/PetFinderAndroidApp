@@ -23,9 +23,8 @@ import com.example.petfinderapp.presentation.screens.FoundScreen
 import com.example.petfinderapp.presentation.screens.LookingScreen
 import com.example.petfinderapp.presentation.screens.PostDetailsScreen
 import com.example.petfinderapp.presentation.theme.PetFinderAppTheme
+import com.example.petfinderapp.presentation.utils.Screen
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 
 class MainActivity : ComponentActivity() {
     private lateinit var petFinderVM: PetFinderVM

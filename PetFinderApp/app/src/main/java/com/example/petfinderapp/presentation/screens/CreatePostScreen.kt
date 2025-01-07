@@ -2,7 +2,6 @@ package com.example.petfinderapp.presentation.screens
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -21,7 +20,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavHostController
 import com.example.petfinderapp.domain.PostType
-import com.example.petfinderapp.presentation.Screen
+import com.example.petfinderapp.presentation.utils.Screen
 import com.example.petfinderapp.presentation.components.CreatePostAddImage
 import com.example.petfinderapp.presentation.components.CreatePostForm
 import com.example.petfinderapp.presentation.components.FullScreenImageDialog

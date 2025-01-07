@@ -13,7 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.petfinderapp.presentation.Screen
+import com.example.petfinderapp.presentation.utils.Screen
 
 @Composable
 fun BottomNavBar(navController: NavController) {

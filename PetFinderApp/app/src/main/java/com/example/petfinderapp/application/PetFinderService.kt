@@ -18,6 +18,7 @@ import com.example.petfinderapp.infrastructure.StorageRepository
 import com.example.petfinderapp.infrastructure.TensorFlowLiteHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.time.LocalDateTime
 
 class PetFinderService(
     val applicationContext: Context
@@ -156,7 +157,6 @@ class PetFinderService(
 
         return filteredPosts.sortedWith(compareBy(
             { post -> selectedColors.size - post.color.count { it in selectedColors } },
-            { post -> post.color.size }
         ))
     }
 
