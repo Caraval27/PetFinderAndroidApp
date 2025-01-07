@@ -18,6 +18,7 @@ appcompat = "1.7.0"
 foundationDesktop = "1.7.0"
 ui = "1.4.0"
 litertMetadata = "1.0.1"
+litert = "1.0.1"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -47,6 +48,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-foundation-desktop = { group = "androidx.compose.foundation", name = "foundation-desktop", version.ref = "foundationDesktop" }
 ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "ui" }
 litert-metadata = { group = "com.google.ai.edge.litert", name = "litert-metadata", version.ref = "litertMetadata" }
+litert = { group = "com.google.ai.edge.litert", name = "litert", version.ref = "litert" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
