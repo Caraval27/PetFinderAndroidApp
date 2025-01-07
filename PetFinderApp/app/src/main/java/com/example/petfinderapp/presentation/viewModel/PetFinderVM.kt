@@ -177,17 +177,25 @@ class PetFinderVM(
             ?: emptyList()
         val selectedBreedsByAnimal = selectedAnimals.mapValues { (_, breeds) -> breeds.toSet() }
 
-        _filteredPosts.value = allPosts.filter { post ->
+        val filteredPosts = allPosts.filter { post ->
             val matchesAnimal = selectedAnimals.isEmpty() || selectedAnimals.keys.contains(post.animalType)
 
             val matchesBreed = selectedBreedsByAnimal[post.animalType]?.let { requiredBreeds ->
                 requiredBreeds.isEmpty() || requiredBreeds.all { it in post.breed }
             } ?: true
 
-            val matchesColor = selectedColors.isEmpty() || selectedColors.all { it in post.color }
+            val matchesColor = selectedColors.isEmpty() || selectedColors.any { it in post.color }
 
             matchesAnimal && matchesBreed && matchesColor
         }
+
+        val sortedPosts = filteredPosts.sortedWith(compareBy(
+            { post -> selectedColors.size - post.color.count { it in selectedColors } },
+            { post -> post.color.size }
+        ))
+
+        _filteredPosts.value = sortedPosts
+
     }
 
     fun searchImage(context: Context, imageUri: Uri) {
