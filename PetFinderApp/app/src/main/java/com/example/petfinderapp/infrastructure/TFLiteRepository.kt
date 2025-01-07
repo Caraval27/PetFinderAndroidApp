@@ -1,4 +1,4 @@
-package com.example.petfinderapp.utils
+package com.example.petfinderapp.infrastructure
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,7 +7,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 
-class TensorFlowLiteHelper(context: Context, modelName: String) {
+class TFLiteRepository(context: Context, modelName: String) {
     private val interpreter: Interpreter
 
     init {
