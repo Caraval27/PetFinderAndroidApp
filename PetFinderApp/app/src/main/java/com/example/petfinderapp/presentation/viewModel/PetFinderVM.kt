@@ -238,7 +238,6 @@ class PetFinderVM(
 
                     if (_filteredPosts.value.isEmpty()) {
                         Toast.makeText(context, "No matches on image search", Toast.LENGTH_SHORT).show()
-                        _filteredPosts.value = allPosts
                     }
                 } else {
                     Toast.makeText(context, "Failed to load picture", Toast.LENGTH_SHORT).show()
