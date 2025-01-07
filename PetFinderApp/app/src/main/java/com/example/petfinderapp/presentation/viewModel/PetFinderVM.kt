@@ -96,8 +96,9 @@ class PetFinderVM(
     }
 
     fun initDetails(postId: String) {
-        if (postId != post.value.id) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            _hasInternetConnection.value = petFinderService.hasInternetConnection()
+            if (postId != post.value.id) {
                 petFinderService.startStreamingPostDetails(postId)
             }
         }
