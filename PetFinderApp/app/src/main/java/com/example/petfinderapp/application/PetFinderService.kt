@@ -237,6 +237,7 @@ class PetFinderService(
                             .sortedBy { post ->
                                 post.breed.size - matchingCatBreeds.filter { it.first in post.breed }.sumOf { it.second.toDouble() }
                             }
+
                     }
                 } else {
                     Toast.makeText(context, "No matches on image search", Toast.LENGTH_SHORT).show()
@@ -269,7 +270,7 @@ class PetFinderService(
 
         for (index in result.indices) {
             val confidence = result[index]
-            if (confidence >= 0.5) {
+            if (confidence >= 0.1) {
                 val label = labels.getOrNull(index) ?: "Unknown"
                 println("Dog Breed: $label, Confidence: $confidence")
                 dogBreedLabelsWithConfidence.add(label to confidence)
@@ -285,7 +286,7 @@ class PetFinderService(
 
         for (index in result.indices) {
             val confidence = result[index]
-            if (confidence >= 0.5) {
+            if (confidence >= 0.1) {
                 val label = labels.getOrNull(index) ?: "Unknown"
                 println("Cat Breed: $label, Confidence: $confidence")
                 catBreedLabelsWithConfidence.add(label to confidence)
