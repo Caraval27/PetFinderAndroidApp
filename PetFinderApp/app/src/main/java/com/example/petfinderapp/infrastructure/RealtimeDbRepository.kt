@@ -36,11 +36,9 @@ class RealtimeDbRepository {
         val newPostRef = postsRef.push()
         val task = newPostRef.setValue(post)
         task.addOnSuccessListener {
-            Log.d("RealtimeDbRepository", "Succeeded to insert post")
             _insertSucceeded.value = true
         }
         task.addOnFailureListener {
-            Log.e("RealtimeDbRepository", "Failed to insert post", it)
             _insertSucceeded.value = false
         }
     }
@@ -54,7 +52,6 @@ class RealtimeDbRepository {
                     post.id = dataSnapshot.key!!
                     val newPosts = _posts.value + post
                     _posts.value = newPosts.sortedByDescending { LocalDateTime.parse(it.time) }
-                    Log.d("RealtimeDbRepository","Post fetched: " + post.title)
                 }
             }
 
@@ -80,7 +77,6 @@ class RealtimeDbRepository {
                 if (post != null && postId != null) {
                     post.id = postId
                     _post.value = post
-                    Log.d("RealtimeDbRepository", "Post fetched: " + post.title)
                 }
             }
 

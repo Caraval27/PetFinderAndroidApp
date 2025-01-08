@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,6 +26,7 @@ fun FeedGrid(
 ) {
     val context = LocalContext.current
     val filteredPosts by petFinderVM.filteredPosts.collectAsState()
+    val gridState = rememberLazyGridState()
 
     LaunchedEffect(Unit) {
         if (!petFinderVM.isReturningFromDetails) {
@@ -32,6 +34,10 @@ fun FeedGrid(
         } else {
             petFinderVM.updateIsReturningFromDetails(false)
         }
+    }
+
+    LaunchedEffect(filteredPosts) {
+        gridState.scrollToItem(0)
     }
 
     Column(
@@ -46,7 +52,8 @@ fun FeedGrid(
             columns = GridCells.Fixed(3),
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            state = gridState
         ) {
             items(filteredPosts) { post ->
                 ImageCard(post = post, navController = navController)

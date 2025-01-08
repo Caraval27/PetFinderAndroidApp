@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import com.example.petfinderapp.domain.Category
 import com.example.petfinderapp.domain.Post
@@ -163,13 +164,23 @@ class PetFinderService(
             },
             { post ->
                 val selectedBreeds = selectedBreedsByAnimal[post.animalType] ?: emptySet()
-                post.breed.size - post.breed.count { it in selectedBreeds }
+                if (selectedBreeds.isNotEmpty()) {
+                    post.breed.size - post.breed.count { it in selectedBreeds }
+                }
+                else {
+                    0
+                }
             },
             { post ->
                 -post.color.count { it in selectedColors }
             },
             { post ->
-                post.color.size - post.color.count { it in selectedColors}
+                if (selectedColors.isNotEmpty()) {
+                    post.color.size - post.color.count { it in selectedColors }
+                }
+                else {
+                    0
+                }
             }
         ))
     }
@@ -201,8 +212,20 @@ class PetFinderService(
                             post.animalType == animalTypeLabel
                         }
                     } else {
-                        filteredPosts.value = allPosts.filter { post ->
-                            post.breed.any { it in matchingDogBreeds.map { it.first } }
+                        filteredPosts.value = allPosts
+                            .filter { post ->
+                                post.breed.any { it in matchingDogBreeds.map { it.first } }
+                            }
+                            .sortedBy { post ->
+                                post.breed.size - matchingDogBreeds.filter { it.first in post.breed }.sumOf { it.second.toDouble() }
+                            }
+                        filteredPosts.value.forEach { post ->
+                            Log.d("PetFinderService", "Post ID: ${post.title}")
+                            val confidenceValues = matchingDogBreeds
+                                .filter { it.first in post.breed }
+                                .map { it.second.toDouble() } // Extract the confidence values
+                            Log.d("PetFinderService", "Confidence values for matching breeds: $confidenceValues")
+                            Log.d("PetFinderService", "Total confidence compared to size: ${post.breed.size - confidenceValues.sum()}")
                         }
                     }
                 } else if (animalTypeLabel == "Cat") {
@@ -215,9 +238,13 @@ class PetFinderService(
                             post.animalType == animalTypeLabel
                         }
                     } else {
-                        filteredPosts.value = allPosts.filter { post ->
-                            post.breed.any { it in matchingCatBreeds.map { it.first } }
-                        }
+                        filteredPosts.value = allPosts
+                            .filter { post ->
+                                post.breed.any { it in matchingCatBreeds.map { it.first } }
+                            }
+                            .sortedBy { post ->
+                                post.breed.size - matchingCatBreeds.filter { it.first in post.breed }.sumOf { it.second.toDouble() }
+                            }
                     }
                 } else {
                     Toast.makeText(context, "No matches on image search", Toast.LENGTH_SHORT).show()
