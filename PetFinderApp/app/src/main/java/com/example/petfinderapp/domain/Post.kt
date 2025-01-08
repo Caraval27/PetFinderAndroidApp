@@ -18,5 +18,5 @@ data class Post(
 )
 
 enum class PostType {
-    Found, Looking
+    Found, Searching
 }

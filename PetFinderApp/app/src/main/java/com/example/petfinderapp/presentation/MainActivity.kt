@@ -20,7 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.petfinderapp.presentation.components.BottomNavBar
 import com.example.petfinderapp.presentation.screens.CreatePostScreen
 import com.example.petfinderapp.presentation.screens.FoundScreen
-import com.example.petfinderapp.presentation.screens.LookingScreen
+import com.example.petfinderapp.presentation.screens.SearchingScreen
 import com.example.petfinderapp.presentation.screens.PostDetailsScreen
 import com.example.petfinderapp.presentation.theme.PetFinderAppTheme
 import com.example.petfinderapp.presentation.utils.Screen
@@ -67,8 +67,8 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.Found.route) {
                             FoundScreen(petFinderVM = petFinderVM, navController = navController)
                         }
-                        composable(Screen.Looking.route) {
-                            LookingScreen(petFinderVM = petFinderVM, navController = navController)
+                        composable(Screen.Searching.route) {
+                            SearchingScreen(petFinderVM = petFinderVM, navController = navController)
                         }
                         composable(Screen.CreatePost.route) {
                             CreatePostScreen(

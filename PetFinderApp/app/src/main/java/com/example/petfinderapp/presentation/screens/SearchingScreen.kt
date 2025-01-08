@@ -7,12 +7,12 @@ import com.example.petfinderapp.presentation.components.FeedGrid
 import com.example.petfinderapp.presentation.viewModel.PetFinderVM
 
 @Composable
-fun LookingScreen(
+fun SearchingScreen(
     petFinderVM: PetFinderVM,
     navController: NavHostController
 ) {
     LaunchedEffect(Unit) {
-        petFinderVM.initFeed(PostType.Looking)
+        petFinderVM.initFeed(PostType.Searching)
     }
 
     FeedGrid(petFinderVM = petFinderVM, navController = navController)

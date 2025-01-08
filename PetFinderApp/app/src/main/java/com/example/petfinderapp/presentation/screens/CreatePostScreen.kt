@@ -44,7 +44,7 @@ fun CreatePostScreen(
     var userName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var description by remember { mutableStateOf(TextFieldValue("")) }
-    var postType by remember { mutableStateOf("Found") }
+    var postType by remember { mutableStateOf(PostType.Found) }
     var selectedImages by remember { mutableStateOf<List<String>>(emptyList()) }
     var imageUri: Uri? by remember { mutableStateOf(null) }
     var fullScreenImageIndex by remember { mutableStateOf<Int?>(null) }
@@ -76,9 +76,9 @@ fun CreatePostScreen(
     LaunchedEffect(insertSucceeded.value) {
         if (insertSucceeded.value == true) {
 
-            when (PostType.valueOf(postType)) {
+            when (postType) {
                 PostType.Found -> navController.navigate(Screen.Found.route)
-                PostType.Looking -> navController.navigate(Screen.Looking.route)
+                PostType.Searching -> navController.navigate(Screen.Searching.route)
             }
             title = ""
             animalType.value = ""
@@ -87,7 +87,7 @@ fun CreatePostScreen(
             userName = ""
             phoneNumber = ""
             description = TextFieldValue("")
-            postType = "Found"
+            postType = PostType.Found
             selectedImages = emptyList()
             imageUri = null
 
@@ -146,7 +146,6 @@ fun CreatePostScreen(
         imagesEmpty = selectedImages.isEmpty()
 
         if (!titleEmpty && !usernameEmpty && !phoneEmpty && !imagesEmpty) {
-            val postTypeValue = PostType.valueOf(postType)
             petFinderVM.createPost(
                 title = title,
                 animalType = animalType.value,
@@ -155,7 +154,7 @@ fun CreatePostScreen(
                 userName = userName,
                 phoneNumber = phoneNumber,
                 description = description.text,
-                postType = postTypeValue,
+                postType = postType,
                 images = selectedImages
             )
             loading = true
@@ -216,18 +215,18 @@ fun CreatePostScreen(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 RadioButton(
-                    selected = postType == "Found",
-                    onClick = { postType = "Found" }
+                    selected = postType == PostType.Found,
+                    onClick = { postType = PostType.Found }
                 )
-                Text("Found")
+                Text(PostType.Found.toString())
 
                 Spacer(modifier = Modifier.width(16.dp))
 
                 RadioButton(
-                    selected = postType == "Looking",
-                    onClick = { postType = "Looking" }
+                    selected = postType == PostType.Searching,
+                    onClick = { postType = PostType.Searching }
                 )
-                Text("Looking")
+                Text(PostType.Searching.toString())
             }
         }
         Spacer(modifier = Modifier.height(8.dp))

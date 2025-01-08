@@ -133,14 +133,14 @@ fun PostDetailsScreen(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             when (post.value.postType) {
-                PostType.Looking -> {
+                PostType.Searching -> {
                     Icon(
                         imageVector = Icons.Filled.Search,
-                        contentDescription = "Looking for a pet",
+                        contentDescription = "Searching for a pet",
                         tint = Color(0xFF1968A6)
                     )
                     Text(
-                        text = "Looking",
+                        text = PostType.Searching.toString(),
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
@@ -156,7 +156,7 @@ fun PostDetailsScreen(
                         tint = Color(0xFF1C7520)
                     )
                     Text(
-                        text = "Found",
+                        text = PostType.Found.toString(),
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,

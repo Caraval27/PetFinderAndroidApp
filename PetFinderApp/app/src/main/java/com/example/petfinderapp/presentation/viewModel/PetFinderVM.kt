@@ -34,7 +34,7 @@ class PetFinderVM(
     private val _insertSucceeded = MutableStateFlow<Boolean?>(null)
     val insertSucceeded : StateFlow<Boolean?> = _insertSucceeded
 
-    private var _postType = PostType.Looking
+    private var _postType = PostType.Searching
 
     private val _hasInternetConnection = MutableStateFlow(true)
     val hasInternetConnection: StateFlow<Boolean> = _hasInternetConnection
