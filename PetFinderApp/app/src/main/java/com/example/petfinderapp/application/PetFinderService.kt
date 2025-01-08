@@ -19,6 +19,7 @@ import com.example.petfinderapp.infrastructure.TensorFlowLiteHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDateTime
+import kotlin.math.absoluteValue
 
 class PetFinderService(
     val applicationContext: Context
@@ -147,7 +148,7 @@ class PetFinderService(
             val matchesAnimal = selectedAnimals.isEmpty() || selectedAnimals.keys.contains(post.animalType)
 
             val matchesBreed = selectedBreedsByAnimal[post.animalType]?.let { requiredBreeds ->
-                requiredBreeds.isEmpty() || requiredBreeds.all { it in post.breed }
+                requiredBreeds.isEmpty() || requiredBreeds.any { it in post.breed }
             } ?: true
 
             val matchesColor = selectedColors.isEmpty() || selectedColors.any { it in post.color }
@@ -156,7 +157,20 @@ class PetFinderService(
         }
 
         return filteredPosts.sortedWith(compareBy(
-            { post -> selectedColors.size - post.color.count { it in selectedColors } },
+            { post ->
+                val selectedBreeds = selectedBreedsByAnimal[post.animalType] ?: emptySet()
+                -post.breed.count { it in selectedBreeds }
+            },
+            { post ->
+                val selectedBreeds = selectedBreedsByAnimal[post.animalType] ?: emptySet()
+                post.breed.size - post.breed.count { it in selectedBreeds }
+            },
+            { post ->
+                -post.color.count { it in selectedColors }
+            },
+            { post ->
+                post.color.size - post.color.count { it in selectedColors}
+            }
         ))
     }
 
