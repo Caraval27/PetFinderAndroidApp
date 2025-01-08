@@ -219,14 +219,6 @@ class PetFinderService(
                             .sortedBy { post ->
                                 post.breed.size - matchingDogBreeds.filter { it.first in post.breed }.sumOf { it.second.toDouble() }
                             }
-                        filteredPosts.value.forEach { post ->
-                            Log.d("PetFinderService", "Post ID: ${post.title}")
-                            val confidenceValues = matchingDogBreeds
-                                .filter { it.first in post.breed }
-                                .map { it.second.toDouble() } // Extract the confidence values
-                            Log.d("PetFinderService", "Confidence values for matching breeds: $confidenceValues")
-                            Log.d("PetFinderService", "Total confidence compared to size: ${post.breed.size - confidenceValues.sum()}")
-                        }
                     }
                 } else if (animalTypeLabel == "Cat") {
                     val catBreedLabels = loadAnimalBreeds(context, "Cat")
