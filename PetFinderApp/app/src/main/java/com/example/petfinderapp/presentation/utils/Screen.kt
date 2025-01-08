@@ -7,6 +7,6 @@ import com.example.petfinderapp.R
 
 sealed class Screen(val route: String, val icon: Any, val label: String) {
     data object Found : Screen("found", R.drawable.found_icon, "Found")
-    data object Looking : Screen("looking", Icons.Filled.Search, "Looking")
+    data object Searching : Screen("searching", Icons.Filled.Search, "Searching")
     data object CreatePost : Screen("post", Icons.Default.Add, "Post")
 }

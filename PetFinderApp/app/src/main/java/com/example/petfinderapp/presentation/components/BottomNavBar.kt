@@ -19,7 +19,7 @@ import com.example.petfinderapp.presentation.utils.Screen
 fun BottomNavBar(navController: NavController) {
     val items = listOf(
         Screen.Found,
-        Screen.Looking,
+        Screen.Searching,
         Screen.CreatePost
     )
 
