@@ -57,7 +57,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.appcompat)
-    implementation(libs.litert.metadata)
+    //implementation(libs.litert.metadata)
+    implementation(libs.litert.metadata) {
+        exclude(group = "com.google.ai.edge.litert", module = "litert-api")
+    }
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -74,8 +77,9 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
-    //implementation("org.tensorflow:tensorflow-lite:2.12.0")
-    implementation ("org.tensorflow:tensorflow-lite:+") // TensorFlow Lite core
-    implementation ("org.tensorflow:tensorflow-lite-gpu:+") // Optional: If you're using GPU acceleration
-    implementation ("org.tensorflow:tensorflow-lite-support:+") // Optional: For additional TensorFlow Lite support
+
+    implementation ("org.tensorflow:tensorflow-lite:+")
+    implementation ("org.tensorflow:tensorflow-lite-gpu:+")
+
 }
+
